@@ -4,7 +4,7 @@
     <string name="app_name">evernote_android</string>
     <string name="action_settings">Settings</string>
 
-    <string-array name="nav_drawer_items">
+    <string-array name="slide_menu_items">
         <item>Заметки</item>
         <item>Напоминания</item>
         <item>Настройки</item>

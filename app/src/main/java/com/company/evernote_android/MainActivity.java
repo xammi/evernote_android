@@ -1,87 +1,82 @@
 package com.company.evernote_android;
 
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.company.evernote_android.adapter.NavDrawerListAdapter;
-import com.company.evernote_android.model.NavDrawerItem;
+import com.company.evernote_android.adapter.SlideMenuAdapter;
+import com.company.evernote_android.model.SlideMenuItem;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout drawerLayout;
+    private ListView slideMenu;
+    private ActionBarDrawerToggle drawerToggle;
 
     // nav drawer title
-    private CharSequence mDrawerTitle;
+    private CharSequence slideMenuTitle;
+    private CharSequence appTitle;
+    private String[] slideMenuTitles;
 
-    // used to store app title
-    private CharSequence mTitle;
-
-    // slide menu items
-    private String[] navMenuTitles;
-
-    private ArrayList<NavDrawerItem> navDrawerItems;
-    private NavDrawerListAdapter adapter;
+    private ArrayList<SlideMenuItem> slideMenuItems;
+    private SlideMenuAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mTitle = mDrawerTitle = getTitle();
+        appTitle = slideMenuTitle = getTitle();
 
         // load slide menu items
-        navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+        slideMenuTitles = getResources().getStringArray(R.array.slide_menu_items);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        slideMenu = (ListView) findViewById(R.id.slide_menu);
 
-        navDrawerItems = new ArrayList<>();
+        slideMenuItems = new ArrayList<>();
 
         // adding nav drawer items to array
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0]));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1]));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2]));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3]));
+        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[0]));
+        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[1]));
+        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[2]));
+        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[3]));
 
         // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
+        adapter = new SlideMenuAdapter(getApplicationContext(), slideMenuItems);
+        slideMenu.setAdapter(adapter);
+        slideMenu.setOnItemClickListener(new SlideMenuClickListener());
 
         // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.app_name, // nav drawer open - description for accessibility
                 R.string.app_name  // nav drawer close - description for accessibility
         ){
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle(appTitle);
                 // calling onPrepareOptionsMenu() to show action bar icons
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
+                getSupportActionBar().setTitle(slideMenuTitle);
                 // calling onPrepareOptionsMenu() to hide action bar icons
                 invalidateOptionsMenu();
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerLayout.setDrawerListener(drawerToggle);
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -90,7 +85,8 @@ public class MainActivity extends Activity {
     }
 
     public void displayView(int position) {
-        setTitle(navMenuTitles[position]);
+        setTitle(slideMenuTitles[position]);
+        drawerLayout.closeDrawer(slideMenu);
     }
 
     /***
@@ -99,21 +95,20 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        boolean drawerOpen = drawerLayout.isDrawerOpen(slideMenu);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
+        appTitle = title;
+        getSupportActionBar().setTitle(appTitle);
     }
 
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // display view for selected nav drawer item
             displayView(position);
         }
     }
@@ -126,13 +121,13 @@ public class MainActivity extends Activity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
 
@@ -144,7 +139,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 

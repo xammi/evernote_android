@@ -3,12 +3,12 @@ package com.company.evernote_android.model;
 /**
  * Created by max on 09.04.15.
  */
-public class NavDrawerItem {
+public class SlideMenuItem {
     private String title;
 
-    public NavDrawerItem() {}
+    public SlideMenuItem() {}
 
-    public NavDrawerItem(String title) {
+    public SlideMenuItem(String title) {
         this.title = title;
     }
 
