@@ -16,6 +16,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+
+        <activity
+            android:name=".NewNoteActivity"
+            android:label="@string/title_activity_new_note"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.company.evernote_android.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ReadNoteActivity"
+            android:label="@string/title_activity_read_note"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.company.evernote_android.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
