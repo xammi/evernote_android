@@ -2,7 +2,13 @@
 <resources>
 
     <string name="app_name">evernote_android</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <string-array name="slide_menu_items">
+        <item>Заметки</item>
+        <item>Напоминания</item>
+        <item>Настройки</item>
+        <item>Выход</item>
+    </string-array>
 
 </resources>

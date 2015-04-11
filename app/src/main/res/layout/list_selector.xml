@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <item android:state_pressed="false">
+        <shape
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:shape="rectangle">
+
+            <gradient
+                android:startColor="@color/background_material_light"
+                android:endColor="@color/background_material_light"
+                android:angle="90"/>
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:shape="rectangle">
+
+            <gradient
+                android:startColor="#999"
+                android:endColor="#999"
+                android:angle="90"/>
+        </shape>
+    </item>
+</selector>
