@@ -1,4 +1,4 @@
-package com.company.evernote_android;
+package com.company.evernote_android.activity;
 
 import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.company.evernote_android.R;
 import com.company.evernote_android.adapter.SlideMenuAdapter;
 import com.company.evernote_android.model.SlideMenuItem;
 
