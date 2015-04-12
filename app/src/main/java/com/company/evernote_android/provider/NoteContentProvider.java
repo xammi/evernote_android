@@ -11,7 +11,7 @@ import android.net.Uri;
 public class NoteContentProvider extends ContentProvider{
 
     private ProviderDbHelper dbhelper;
-    
+
     @Override
     public boolean onCreate() {
         return false;

@@ -43,6 +43,8 @@
             android:name=".provider.NoteContentProvider"
             android:authorities="tp.evernote.provider.notes" />
 
+        <service android:name="com.company.evernote_android.service.EvernoteService" />
+
     </application>
 
 </manifest>
