@@ -30,15 +30,28 @@ public class EvernoteServiceHelper {
     // TODO
     public long getNotes() {
 
+        // find this method in queue
+
         long requestId = generateRequestID();
 
         Intent intent = new Intent(appContext, EvernoteService.class);
         intent.putExtra("REQUEST_ID", requestId);
 
+        // create callback
+
+        // put callback in intent
+
         appContext.startService(intent);
 
 
         return requestId;
+    }
+
+    //TODO
+    public void handleNoteResponce(int resultCode) {
+
+
+        // call callback or send broadcast?
     }
 
     private long generateRequestID() {
