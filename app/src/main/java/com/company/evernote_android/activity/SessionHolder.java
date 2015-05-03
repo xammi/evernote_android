@@ -2,16 +2,14 @@ package com.company.evernote_android.activity;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.company.evernote_android.R;
 import com.evernote.client.android.EvernoteSession;
 
 public class SessionHolder extends ActionBarActivity {
 
-    private static final String CONSUMER_KEY = "You consumer key";
-    private static final String CONSUMER_SECRET = "Your consumer secret";
+    private static final String CONSUMER_KEY = "eugene07";
+    private static final String CONSUMER_SECRET = "fe5beebef36a4335";
 
     private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
 

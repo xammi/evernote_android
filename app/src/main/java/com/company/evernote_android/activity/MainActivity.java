@@ -1,5 +1,6 @@
 package com.company.evernote_android.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.company.evernote_android.R;
@@ -36,6 +38,17 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        TODO
+        Button mTestBtn = (Button) findViewById(R.id.testBtn);
+        mTestBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
         appTitle = slideMenuTitle = getTitle();
 
         // load slide menu items
@@ -46,11 +59,8 @@ public class MainActivity extends ActionBarActivity {
 
         slideMenuItems = new ArrayList<>();
 
-        // adding nav drawer items to array
-        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[0]));
-        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[1]));
-        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[2]));
-        slideMenuItems.add(new SlideMenuItem(slideMenuTitles[3]));
+        for (String title : slideMenuTitles)
+                slideMenuItems.add(new SlideMenuItem(title));
 
         // setting the nav drawer list adapter
         adapter = new SlideMenuAdapter(getApplicationContext(), slideMenuItems);
