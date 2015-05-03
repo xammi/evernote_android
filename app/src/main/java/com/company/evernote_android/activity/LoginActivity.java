@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.company.evernote_android.R;
+import com.evernote.client.android.EvernoteSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.List;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends SessionHolder implements LoaderCallbacks<Cursor> {
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -290,6 +292,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
             }
 
+            mEvernoteSession.authenticate(LoginActivity.this);
+
             // TODO: register the new account here.
             return true;
         }
@@ -311,6 +315,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            //Update UI when oauth activity returns result
+            case EvernoteSession.REQUEST_CODE_OAUTH:
+                if (resultCode == Activity.RESULT_OK) {
+//                    updateAuthUi();
+                }
+                break;
         }
     }
 }

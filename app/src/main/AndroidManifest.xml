@@ -21,7 +21,6 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
-
         <activity
             android:name=".activity.NewNoteActivity"
             android:label="@string/title_activity_new_note"
@@ -43,8 +42,12 @@
             android:name=".provider.NoteContentProvider"
             android:authorities="tp.evernote.provider.notes" />
 
-        <service android:name="com.company.evernote_android.service.EvernoteService" />
+        <service android:name=".service.EvernoteService" />
 
+        <activity
+            android:name=".activity.SessionHolder"
+            android:label="@string/title_activity_session_holder" >
+        </activity>
     </application>
 
 </manifest>
