@@ -31,10 +31,4 @@
 
     </android.support.v4.widget.DrawerLayout>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Test auth"
-        android:id="@+id/testBtn"/>
-
 </RelativeLayout>

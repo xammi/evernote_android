@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_login">#2dbe60</color>
+    <color name="sing_in_button">#76c196</color>
+    <color name="login_remember_color">#FFFFFF</color>
+    <color name="login_text">#005e37</color>
+    <color name="login_hint">#1a7e4d</color>
+
+    <color name="background_drawer">#182025</color>
+    <color name="subtitle_color">#abe5bf</color>
+    <color name="divider">#e9e9ea</color>
+
+    <color name="note_fragment">#fefeff</color>
+    <color name="note_edit">#333333</color>
+
+    <color name="green">#2dbe60</color>
+    <color name="yellow">#f2f24b</color>
+    <color name="blue">#2a5bfc</color>
+    <color name="black">#000000</color>
+    <color name="red">#f2452b</color>
+</resources>

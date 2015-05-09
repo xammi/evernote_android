@@ -2,31 +2,41 @@
 <resources>
 
     <string name="app_name">evernote_android</string>
-    <string name="action_settings">Settings</string>
 
     <string-array name="slide_menu_items">
         <item>Заметки</item>
-        <item>Напоминания</item>
-        <item>Настройки</item>
-        <item>Выход</item>
-        <item>Логин</item>
+        <item>Блокноты</item>
     </string-array>
 
+    <string name="title_activity_main">Evernote</string>
     <string name="title_activity_new_note">NewNoteActivity</string>
     <string name="title_activity_read_note">ReadNoteActivity</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="title_activity_session_holder">SessionHolder</string>
+    <string name="menu">Меню</string>
+    <string name="menu_sort">Сортировка…</string>
+    <string name="menu_sync">Синхронизировать</string>
+    <string name="menu_options">Настройки</string>
+    <string name="menu_add_to_home_screen">Добавить на домашний экран</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="title_section1">Все заметки</string>
+    <string name="title_section2">Все блокноты</string>
+
+    <string name="btn_no">ОТМЕНИТЬ</string>
+    <string name="btn_yes">СОХРАНИТЬ</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="create_note">Создайте заметку</string>
+    <string name="create_notebook">Создайте простой блокнот</string>
+
+    <string name="evernote">Evernote МГТУ</string>
+    <string name="sync">Синхронизация</string>
+    <string name="sync_settings_summary">Sync</string>
+    <string name="general_settings">Главные настройки</string>
+    <string name="action_settings">Настройки</string>
+    <string name="logo_content_description">logo</string>
+    <string name="search">Search</string>
 
 </resources>

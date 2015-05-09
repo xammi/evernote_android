@@ -2,4 +2,31 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">0dp</dimen>
     <dimen name="activity_vertical_margin">0dp</dimen>
+    <dimen name="logo_margin">48dp</dimen>
+    <dimen name="scroll_view">50dp</dimen>
+
+    <dimen name="login_text_margin_top">16dp</dimen>
+    <dimen name="login_text_size">32sp</dimen>
+    <dimen name="login_input_field">48dp</dimen>
+    <dimen name="login_input_field_padding_lft_rgt">32dp</dimen>
+    <dimen name="login_input_field_padding_bottom">18dp</dimen>
+    <dimen name="login_text">18sp</dimen>
+
+    <dimen name="navigation_drawer_width">240dp</dimen>
+    <dimen name="drawer_width">320dp</dimen>
+    <dimen name="btn_yes_no_padding">30dp</dimen>
+    <dimen name="btn_text_size">16sp</dimen>
+    <dimen name="divider">2dp</dimen>
+    <dimen name="drawer_icon_default">12dp</dimen>
+    <dimen name="drawer_icon_left">16dp</dimen>
+    <dimen name="drawer_edit_padding_right">40dp</dimen>
+    <dimen name="drawer_edit_padding_left">5dp</dimen>
+    <dimen name="drawer_height">48dp</dimen>
+
+    <dimen name="note_height">64dp</dimen>
+    <dimen name="note_padding">16dp</dimen>
+    <dimen name="note_paddingTop">20dp</dimen>
+    <dimen name="note_title">18sp</dimen>
+    <dimen name="note_content">16sp</dimen>
+
 </resources>
