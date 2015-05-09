@@ -18,4 +18,6 @@
     <color name="blue">#2a5bfc</color>
     <color name="black">#000000</color>
     <color name="red">#f2452b</color>
+
+    <color name="counter_text_color">#447777</color>
 </resources>

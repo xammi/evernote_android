@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.company.evernote_android.R;
@@ -47,8 +48,15 @@ public class SlideMenuAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.list_item, null);
         }
 
-        TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-        txtTitle.setText(menuItems.get(position).getTitle());
+        ImageView iconView = (ImageView) convertView.findViewById(R.id.icon);
+        TextView titleView = (TextView) convertView.findViewById(R.id.title);
+        TextView counterView = (TextView) convertView.findViewById(R.id.counter);
+
+        SlideMenuItem item = menuItems.get(position);
+
+        iconView.setImageResource(item.icon);
+        titleView.setText(item.title);
+        counterView.setText(item.getCounterValue());
 
         return convertView;
     }

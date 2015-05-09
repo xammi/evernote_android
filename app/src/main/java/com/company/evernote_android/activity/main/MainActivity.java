@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,62 +28,55 @@ public class MainActivity extends ActionBarActivity {
     private ActionBarDrawerToggle drawerToggle;
 
     // nav drawer title
-    private CharSequence slideMenuTitle;
     private CharSequence appTitle;
     private String[] slideMenuTitles;
-
-    private ArrayList<SlideMenuItem> slideMenuItems;
-    private SlideMenuAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        appTitle = slideMenuTitle = getTitle();
-
-        // load slide menu items
-        slideMenuTitles = getResources().getStringArray(R.array.slide_menu_items);
-
+        appTitle = getTitle();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         slideMenu = (ListView) findViewById(R.id.slide_menu);
 
-        slideMenuItems = new ArrayList<>();
-
-        for (String title : slideMenuTitles)
-                slideMenuItems.add(new SlideMenuItem(title));
-
-        // setting the nav drawer list adapter
-        adapter = new SlideMenuAdapter(getApplicationContext(), slideMenuItems);
+        SlideMenuAdapter adapter = new SlideMenuAdapter(getApplicationContext(), loadSlideMenuItems());
         slideMenu.setAdapter(adapter);
         slideMenu.setOnItemClickListener(new SlideMenuClickListener());
 
-        // enabling action bar app icon and behaving it as toggle button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setLogo(R.drawable.ic_app_logo);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-                R.string.app_name, // nav drawer open - description for accessibility
-                R.string.app_name  // nav drawer close - description for accessibility
-        ){
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name)
+        {
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(appTitle);
-                // calling onPrepareOptionsMenu() to show action bar icons
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle(slideMenuTitle);
-                // calling onPrepareOptionsMenu() to hide action bar icons
+                getSupportActionBar().setTitle("");
                 invalidateOptionsMenu();
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
 
         if (savedInstanceState == null) {
-            // on first time display view for first nav item
             displayView(0);
         }
+    }
+
+    private ArrayList<SlideMenuItem> loadSlideMenuItems() {
+        slideMenuTitles = getResources().getStringArray(R.array.slide_menu_items);
+        TypedArray slideMenuIcons = getResources().obtainTypedArray(R.array.slide_menu_icons);
+
+        ArrayList<SlideMenuItem> slideMenuItems = new ArrayList<>();
+        for (int I = 0; I < slideMenuTitles.length; I++)
+            slideMenuItems.add(new SlideMenuItem(slideMenuTitles[I], slideMenuIcons.getResourceId(I, -1)));
+
+        return slideMenuItems;
     }
 
     public void displayView(int position) {

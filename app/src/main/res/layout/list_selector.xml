@@ -9,8 +9,8 @@
             android:shape="rectangle">
 
             <gradient
-                android:startColor="@color/background_material_light"
-                android:endColor="@color/background_material_light"
+                android:startColor="@color/background_drawer"
+                android:endColor="@color/background_drawer"
                 android:angle="90"/>
         </shape>
     </item>
@@ -21,8 +21,8 @@
             android:shape="rectangle">
 
             <gradient
-                android:startColor="#999"
-                android:endColor="#999"
+                android:startColor="#666"
+                android:endColor="#666"
                 android:angle="90"/>
         </shape>
     </item>

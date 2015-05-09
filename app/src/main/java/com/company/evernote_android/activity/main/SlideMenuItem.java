@@ -4,19 +4,19 @@ package com.company.evernote_android.activity.main;
  * Created by max on 09.04.15.
  */
 public class SlideMenuItem {
-    private String title;
+    public String title;
+    public int icon;
+    private int counter;
 
     public SlideMenuItem() {}
 
-    public SlideMenuItem(String title) {
+    public SlideMenuItem(String title, int icon) {
         this.title = title;
+        this.icon = icon;
+        this.counter = 0;
     }
 
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public String getCounterValue() {
+        return Integer.toString(counter);
     }
 }
