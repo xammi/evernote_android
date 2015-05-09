@@ -53,7 +53,7 @@
         </activity>
 
         <provider
-            android:name=".provider.NoteContentProvider"
+            android:name=".provider.EvernoteContentProvider"
             android:authorities="tp.evernote.provider.notes" />
 
         <service android:name=".sync.EvernoteService" />
