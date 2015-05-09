@@ -10,16 +10,19 @@ public final class EvernoteContract {
     public static final String AUTHORITY = "com.company.evernote_android.provider";
     public static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
 
-    public static final class Notebooks implements BaseColumns
-    {
-        public static final String TABLE_NAME = "notebooks";
-        public static final String NAME = "name";
+    public static abstract class General implements BaseColumns {
         public static final String GUID = "guid";
         public static final String CREATED = "created";
         public static final String UPDATED = "updated";
         public static final String USN = "usn";
         public static final String STATE_DELETED = "state_deleted";
         public static final String STATE_SYNC_REQUIRED = "state_sync_required";
+    }
+
+    public static final class Notebooks extends General
+    {
+        public static final String TABLE_NAME = "notebooks";
+        public static final String NAME = "name";
 
         public static final String[] ALL_COLUMNS_PROJECTION = {_ID, NAME, GUID, CREATED, UPDATED, USN, STATE_DELETED, STATE_SYNC_REQUIRED};
 
@@ -35,28 +38,15 @@ public final class EvernoteContract {
 
         static final String SQL_DROP = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-        public static final String DELETED_SELECTION = STATE_DELETED + "=" + StateDeleted.TRUE.ordinal();
-        public static final String NOT_DELETED_SELECTION = STATE_DELETED + "=" + StateDeleted.FALSE.ordinal();
-        public static final String NOT_SYNCED_SELECTION = STATE_SYNC_REQUIRED + "=" + StateSyncRequired.PENDING.ordinal();
-        public static final String WITH_SPECIFIED_GUID_SELECTION = GUID + "=?";
-        public static final String WITH_SPECIFIED_NAME_SELECTION = NAME + "=?";
-
         public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TABLE_NAME);
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.evernote.notebooks";
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.evernote.notebooks";
     }
 
-    public static final class Notes implements BaseColumns
+    public static final class Notes extends General
     {
         public static final String TABLE_NAME = "notes";
         public static final String TITLE = "title";
         public static final String CONTENT = "content";
-        public static final String GUID = "guid";
-        public static final String CREATED = "created";
-        public static final String UPDATED = "updated";
-        public static final String USN = "usn";
-        public static final String STATE_DELETED = "state_deleted";
-        public static final String STATE_SYNC_REQUIRED = "state_sync_required";
         public static final String NOTEBOOKS_ID = "notebooks_id";
 
         public static final String[] ALL_COLUMNS_PROJECTION = {_ID, TITLE, CONTENT, GUID, CREATED, UPDATED, USN, STATE_DELETED, STATE_SYNC_REQUIRED, NOTEBOOKS_ID};
@@ -77,15 +67,8 @@ public final class EvernoteContract {
 
         static final String SQL_DROP = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-        public static final String DELETED_SELECTION = STATE_DELETED + "=" + StateDeleted.TRUE.ordinal();
-        public static final String NOT_DELETED_SELECTION = STATE_DELETED + "=" + StateDeleted.FALSE.ordinal();
-        public static final String WITH_SPECIFIED_NOTEBOOKS_ID_SELECTION = NOTEBOOKS_ID + "=?";
-        public static final String WITH_SPECIFIED_GUID_SELECTION = GUID + "=?";
-        public static final String NOT_SYNCED_SELECTION = STATE_SYNC_REQUIRED + "=" + StateSyncRequired.PENDING.ordinal();
-
         public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TABLE_NAME);
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.evernote.notes";
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.evernote.notes";
     }
 
     public static enum StateDeleted {
