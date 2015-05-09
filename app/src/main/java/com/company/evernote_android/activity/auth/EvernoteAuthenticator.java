@@ -1,4 +1,4 @@
-package com.company.evernote_android.auth;
+package com.company.evernote_android.activity.auth;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;

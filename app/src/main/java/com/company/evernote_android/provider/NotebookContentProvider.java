@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 
 /**
- * Created by Zalman on 12.04.2015.
+ * Created by max on 09.05.15.
  */
-public class NoteContentProvider extends ContentProvider{
+public class NotebookContentProvider extends ContentProvider {
 
     private DatabaseHelper dbhelper;
 

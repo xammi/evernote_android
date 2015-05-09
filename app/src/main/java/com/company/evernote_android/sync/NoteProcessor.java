@@ -1,4 +1,4 @@
-package com.company.evernote_android.service;
+package com.company.evernote_android.sync;
 
 /**
  * Created by Zalman on 12.04.2015.

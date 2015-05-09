@@ -25,11 +25,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".auth.LoginActivity"
+            android:name=".activity.auth.LoginActivity"
             android:label="@string/title_activity_login">
         </activity>
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.main.MainActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
@@ -38,28 +38,28 @@
         <activity
             android:name=".activity.NewNoteActivity"
             android:label="@string/title_activity_new_note"
-            android:parentActivityName=".activity.MainActivity" >
+            android:parentActivityName=".activity.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".activity.main.MainActivity" />
         </activity>
         <activity
             android:name=".activity.ReadNoteActivity"
             android:label="@string/title_activity_read_note"
-            android:parentActivityName=".activity.MainActivity" >
+            android:parentActivityName=".activity.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".activity.main.MainActivity" />
         </activity>
 
         <provider
             android:name=".provider.NoteContentProvider"
             android:authorities="tp.evernote.provider.notes" />
 
-        <service android:name=".service.EvernoteService" />
+        <service android:name=".sync.EvernoteService" />
 
         <service
-            android:name=".auth.EvernoteAuthService"
+            android:name=".activity.auth.EvernoteAuthService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />

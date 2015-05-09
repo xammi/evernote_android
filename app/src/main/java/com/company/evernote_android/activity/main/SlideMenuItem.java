@@ -1,4 +1,4 @@
-package com.company.evernote_android.model;
+package com.company.evernote_android.activity.main;
 
 /**
  * Created by max on 09.04.15.

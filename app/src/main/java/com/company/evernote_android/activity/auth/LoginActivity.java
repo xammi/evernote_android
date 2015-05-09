@@ -1,6 +1,5 @@
-package com.company.evernote_android.auth;
+package com.company.evernote_android.activity.auth;
 
-import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
@@ -102,29 +101,22 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         return builder;
     }
 
-
     private void onAuthTokenReceived(EvernoteAuthToken evernoteAuthToken) {
         // TODO: where can we get username?
         String username = "max";
 
         String token = evernoteAuthToken.getToken();
-        Account account = new EvernoteAccount(username);
+        EvernoteAccount account = new EvernoteAccount(username);
         AccountManager accountManager = AccountManager.get(this);
 
         final Bundle result = new Bundle();
-        Bundle userdata = new Bundle();
-        String noteStoreUrl = evernoteAuthToken.getNoteStoreUrl();
-        String webApiUrlPrefix = evernoteAuthToken.getWebApiUrlPrefix();
-
-        userdata.putString(EvernoteAccount.EXTRA_NOTE_STORE_URL, noteStoreUrl);
-        userdata.putString(EvernoteAccount.EXTRA_WEB_API_URL_PREFIX, webApiUrlPrefix);
-        userdata.putString(EvernoteAccount.EXTRA_LAST_SYNC_TIME, "0");
-        userdata.putString(EvernoteAccount.EXTRA_LAST_UPDATED_COUNT, "0");
+        Bundle userdata = account.getUserData(evernoteAuthToken);
 
         if (accountManager.addAccountExplicitly(account, null, userdata)) {
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
             result.putString(AccountManager.KEY_AUTHTOKEN, token);
+
             accountManager.setAuthToken(account, account.type, token);
             ContentResolver.setMasterSyncAutomatically(true);
         }
@@ -149,10 +141,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             String url = null;
             try {
                 OAuthService service = createService();
+
                 Log.i(LOGTAG, "Retrieving OAuth request token...");
                 Token reqToken = service.getRequestToken();
                 mRequestToken = reqToken.getToken();
                 mRequestTokenSecret = reqToken.getSecret();
+
                 Log.i(LOGTAG, "Redirecting user for authorization...");
                 url = service.getAuthorizationUrl(reqToken);
             }

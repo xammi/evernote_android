@@ -1,8 +1,7 @@
-package com.company.evernote_android.service;
+package com.company.evernote_android.sync;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.IBinder;
 
 /**
  * Created by Zalman on 12.04.2015.

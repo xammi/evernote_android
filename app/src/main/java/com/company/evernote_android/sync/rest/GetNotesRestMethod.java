@@ -1,4 +1,4 @@
-package com.company.evernote_android.rest;
+package com.company.evernote_android.sync.rest;
 
 import java.net.URI;
 

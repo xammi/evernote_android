@@ -1,4 +1,4 @@
-package com.company.evernote_android.adapter;
+package com.company.evernote_android.activity.main;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.company.evernote_android.R;
-import com.company.evernote_android.model.SlideMenuItem;
 
 import java.util.ArrayList;
 

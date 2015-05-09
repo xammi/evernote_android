@@ -15,7 +15,8 @@ import android.os.Handler;
 import java.io.IOException;
 
 import com.company.evernote_android.R;
-import com.company.evernote_android.auth.EvernoteAccount;
+import com.company.evernote_android.activity.auth.EvernoteAccount;
+import com.company.evernote_android.activity.main.MainActivity;
 import com.company.evernote_android.provider.EvernoteContract;
 
 

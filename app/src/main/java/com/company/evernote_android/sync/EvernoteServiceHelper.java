@@ -1,4 +1,4 @@
-package com.company.evernote_android.service;
+package com.company.evernote_android.sync;
 
 import android.content.Context;
 import android.content.Intent;
