@@ -45,7 +45,7 @@ public class SlideMenuAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.list_item, null);
+            convertView = mInflater.inflate(R.layout.slide_menu_item, null);
         }
 
         ImageView iconView = (ImageView) convertView.findViewById(R.id.icon);

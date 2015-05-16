@@ -1,10 +1,16 @@
 package com.company.evernote_android.activity.main;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,12 +23,16 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
+import com.company.evernote_android.activity.ReadNoteActivity;
 import com.company.evernote_android.activity.SessionHolder;
+import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.evernote.client.android.InvalidAuthenticationException;
+import static com.company.evernote_android.provider.EvernoteContract.*;
 
 import java.util.ArrayList;
 
@@ -41,6 +51,22 @@ public class MainActivity extends SessionHolder {
 
     ImageButton FAB;
 
+    private class SlideMenuClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            displayView(position);
+        }
+    }
+
+    private class NotesListClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(MainActivity.this, ReadNoteActivity.class);
+            intent.putExtra("id", id);
+            startActivity(intent);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +76,7 @@ public class MainActivity extends SessionHolder {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         slideMenu = (ListView) findViewById(R.id.slide_menu);
 
-        SlideMenuAdapter adapter = new SlideMenuAdapter(getApplicationContext(), loadSlideMenuItems());
+        SlideMenuAdapter adapter = new SlideMenuAdapter(MainActivity.this, loadSlideMenuItems());
         slideMenu.setAdapter(adapter);
         slideMenu.setOnItemClickListener(new SlideMenuClickListener());
 
@@ -98,9 +124,24 @@ public class MainActivity extends SessionHolder {
         return slideMenuItems;
     }
 
-    public void displayView(int position) {
+    private void displayView(int position) {
         setTitle(slideMenuTitles[position]);
         drawerLayout.closeDrawer(slideMenu);
+
+        // update the main content by replacing fragments
+        Fragment fragment = null;
+        switch (position) {
+            case 0:
+                fragment = new NotesFragment();
+                break;
+            default:
+                break;
+        }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        }
     }
 
     /***
@@ -118,13 +159,6 @@ public class MainActivity extends SessionHolder {
     public void setTitle(CharSequence title) {
         appTitle = title;
         getSupportActionBar().setTitle(appTitle);
-    }
-
-    private class SlideMenuClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            displayView(position);
-        }
     }
 
     /**

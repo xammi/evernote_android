@@ -16,14 +16,14 @@ import java.util.Date;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
-public class QueryHelper extends Service implements ClientAPI {
-    private final IBinder mBinder = new QueryHelperBinder();
+public class DBWriteService extends Service implements DBWriteAPI {
+    private final IBinder mBinder = new DBWriteBinder();
 
-    public QueryHelper() {}
+    public DBWriteService() {}
 
-    public class QueryHelperBinder extends Binder {
-        public ClientAPI getClientApiService() {
-            return QueryHelper.this;
+    public class DBWriteBinder extends Binder {
+        public DBWriteAPI getClientApiService() {
+            return DBWriteService.this;
         }
     }
 

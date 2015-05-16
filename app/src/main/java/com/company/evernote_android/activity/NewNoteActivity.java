@@ -19,8 +19,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.company.evernote_android.R;
-import com.company.evernote_android.provider.ClientAPI;
-import com.company.evernote_android.provider.QueryHelper;
+import com.company.evernote_android.provider.DBWriteAPI;
+import com.company.evernote_android.provider.DBWriteService;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.client.android.OnClientCallback;
 import com.evernote.edam.type.Note;
@@ -37,7 +37,7 @@ public class NewNoteActivity extends SessionHolder {
     private EditText mEditTextContent;
 
     private String mSelectedNotebookGuid;
-    private ClientAPI mService = null;
+    private DBWriteAPI mService = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +64,7 @@ public class NewNoteActivity extends SessionHolder {
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            QueryHelper.QueryHelperBinder binder = (QueryHelper.QueryHelperBinder)iBinder;
+            DBWriteService.DBWriteBinder binder = (DBWriteService.DBWriteBinder)iBinder;
             mService = binder.getClientApiService();
         }
 
@@ -77,7 +77,7 @@ public class NewNoteActivity extends SessionHolder {
     @Override
     public void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, QueryHelper.class);
+        Intent intent = new Intent(this, DBWriteService.class);
         this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
