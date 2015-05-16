@@ -7,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,13 +15,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
 import com.company.evernote_android.activity.SessionHolder;
 import com.evernote.client.android.InvalidAuthenticationException;
+import com.evernote.client.android.OnClientCallback;
+import com.evernote.edam.notestore.NoteFilter;
+import com.evernote.edam.notestore.NotesMetadataList;
+import com.evernote.edam.notestore.NotesMetadataResultSpec;
+import com.evernote.edam.type.Notebook;
+import com.evernote.thrift.transport.TTransportException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends SessionHolder {
@@ -54,6 +63,59 @@ public class MainActivity extends SessionHolder {
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.drawable.ic_app_logo);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+
+        // --start check rest method
+                try {
+            if (mEvernoteSession.isLoggedIn()) {
+                mEvernoteSession.getClientFactory().createNoteStoreClient().listNotebooks(new OnClientCallback<List<Notebook>>() {
+                    @Override
+                    public void onSuccess(final List<Notebook> notebooks) {
+                        List<String> namesList = new ArrayList<String>(notebooks.size());
+
+
+                        NoteFilter filter = new NoteFilter();
+                        filter.setNotebookGuid(notebooks.get(1).getGuid());
+
+                        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
+                        spec.setIncludeTitle(true);
+                        try {
+                            mEvernoteSession.getClientFactory().createNoteStoreClient().findNotesMetadata(filter, 0, 10, spec, new OnClientCallback<NotesMetadataList>() {
+                                @Override
+                                public void onSuccess(NotesMetadataList data) {
+
+                                    NotesMetadataList b = data;
+                                    int a =5;
+                                }
+
+                                @Override
+                                public void onException(Exception exception) {
+                                    Log.e(LOGTAG, "Error retrieving notes", exception);
+                                }
+                            });
+                        } catch (TTransportException exception) {
+                            Log.e(LOGTAG, "Error retrieving notes", exception);
+                        }
+
+
+                        for (Notebook notebook : notebooks) {
+                            namesList.add(notebook.getName());
+                        }
+
+                        String notebookNames = TextUtils.join(", ", namesList);
+                        Toast.makeText(getApplicationContext(), notebookNames + " notebooks have been retrieved", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onException(Exception exception) {
+                        Log.e(LOGTAG, "Error retrieving notebooks", exception);
+                    }
+                });
+            }
+        } catch (TTransportException e) {
+            e.getMessage();
+        }
+
+        // --end check rest method
 
         FAB = (ImageButton) findViewById(R.id.imageButton);
         FAB.setOnClickListener(new View.OnClickListener() {

@@ -23,8 +23,9 @@ public class SessionHolder extends ActionBarActivity {
 
     private static final String LOGTAG = "SessionHolder";
 
-    private static final String CONSUMER_KEY = "eugene07";
-    private static final String CONSUMER_SECRET = "fe5beebef36a4335";
+    private static final String CONSUMER_KEY = "streambuf-8430";
+    private static final String CONSUMER_SECRET = "e92a48e112672396";
+
 
     private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
     private static final boolean SUPPORT_APP_LINKED_NOTEBOOKS = true;
