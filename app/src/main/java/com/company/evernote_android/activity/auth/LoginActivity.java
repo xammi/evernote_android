@@ -2,16 +2,20 @@ package com.company.evernote_android.activity.auth;
 
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.company.evernote_android.sync.ClientWrapper;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.oauth.EvernoteAuthToken;
 
@@ -20,8 +24,16 @@ import org.scribe.builder.api.EvernoteApi;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.company.evernote_android.R;
+import com.evernote.edam.error.EDAMNotFoundException;
+import com.evernote.edam.error.EDAMSystemException;
+import com.evernote.edam.error.EDAMUserException;
+import com.evernote.edam.type.User;
+import com.evernote.thrift.TException;
+
+import java.io.IOException;
 
 /**
  * Created by max on 09.05.2015.
@@ -102,30 +114,36 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     private void onAuthTokenReceived(EvernoteAuthToken evernoteAuthToken) {
-        // TODO: where can we get username?
-        String username = "max";
+        try {
+            ClientWrapper clientWrapper = new ClientWrapper(LoginActivity.this);
+            User user = clientWrapper.getUserStoreClient().getUser(evernoteAuthToken.getToken());
 
-        String token = evernoteAuthToken.getToken();
-        EvernoteAccount account = new EvernoteAccount(username);
-        AccountManager accountManager = AccountManager.get(this);
+            String username = "max";
 
-        final Bundle result = new Bundle();
-        Bundle userdata = account.getUserData(evernoteAuthToken);
+            String token = evernoteAuthToken.getToken();
+            EvernoteAccount account = new EvernoteAccount(username);
+            AccountManager accountManager = AccountManager.get(this);
 
-        if (accountManager.addAccountExplicitly(account, null, userdata)) {
-            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-            result.putString(AccountManager.KEY_AUTHTOKEN, token);
+            final Bundle result = new Bundle();
+            Bundle userdata = account.getUserData(evernoteAuthToken);
 
-            accountManager.setAuthToken(account, account.type, token);
-            ContentResolver.setMasterSyncAutomatically(true);
+            if (accountManager.addAccountExplicitly(account, null, userdata)) {
+                result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+                result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+                result.putString(AccountManager.KEY_AUTHTOKEN, token);
+
+                accountManager.setAuthToken(account, account.type, token);
+                ContentResolver.setMasterSyncAutomatically(true);
+            } else {
+                result.putString(AccountManager.KEY_ERROR_MESSAGE, "Failed to add user");
+            }
+            setAccountAuthenticatorResult(result);
+            setResult(RESULT_OK);
+            finish();
+
+        } catch (EDAMSystemException | TException | EDAMUserException e) {
+            e.printStackTrace();
         }
-        else {
-            result.putString(AccountManager.KEY_ERROR_MESSAGE, "Failed to add user");
-        }
-        setAccountAuthenticatorResult(result);
-        setResult(RESULT_OK);
-        finish();
     }
 
     private class BootstrapAsyncTask extends AsyncTask<Void, Void, String> {
