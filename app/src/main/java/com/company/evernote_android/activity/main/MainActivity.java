@@ -1,13 +1,10 @@
 package com.company.evernote_android.activity.main;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,13 +17,13 @@ import android.widget.ListView;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
-import com.company.evernote_android.activity.ParentActivity;
+import com.company.evernote_android.activity.SessionHolder;
 import com.evernote.client.android.InvalidAuthenticationException;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends ParentActivity {
+public class MainActivity extends SessionHolder {
 
     private final static String LOGTAG = "MainActivity";
 

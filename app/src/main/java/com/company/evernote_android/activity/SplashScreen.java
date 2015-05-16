@@ -1,27 +1,18 @@
 package com.company.evernote_android.activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import java.io.IOException;
-
 import com.company.evernote_android.R;
 //import com.company.evernote_android.activity.auth.EvernoteAccount;
 import com.company.evernote_android.activity.main.MainActivity;
-import com.company.evernote_android.provider.EvernoteContract;
+import com.evernote.client.android.EvernoteSession;
 
 
-public class SplashScreen extends ParentActivity {
+public class SplashScreen extends SessionHolder {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +31,18 @@ public class SplashScreen extends ParentActivity {
                 }
             }
         }, 2000);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case EvernoteSession.REQUEST_CODE_OAUTH:
+                if (resultCode == Activity.RESULT_OK) {
+                    startMainActivity(SplashScreen.this);
+                }
+                break;
+        }
     }
 
     public static void startMainActivity(Context ctx) {

@@ -1,6 +1,5 @@
 package com.company.evernote_android.activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -8,12 +7,13 @@ import android.view.MenuItem;
 import com.company.evernote_android.R;
 
 
-public class ReadNoteActivity extends ActionBarActivity {
+public class ReadNoteActivity extends SessionHolder {
+    private static final String LOGTAG = "ReadNoteActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_read_note);
+        setContentView(R.layout.activity_splash_screen);
     }
 
 
