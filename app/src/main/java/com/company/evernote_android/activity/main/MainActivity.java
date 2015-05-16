@@ -14,9 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.company.evernote_android.R;
+import com.company.evernote_android.activity.NewNoteActivity;
 
 import java.util.ArrayList;
 
@@ -30,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
     // nav drawer title
     private CharSequence appTitle;
     private String[] slideMenuTitles;
+
+    ImageButton FAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,15 @@ public class MainActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.drawable.ic_app_logo);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+
+        FAB = (ImageButton) findViewById(R.id.imageButton);
+        FAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NewNoteActivity.class);
+                startActivity(intent);
+            }
+        });
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name)
         {

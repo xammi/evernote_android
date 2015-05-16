@@ -27,6 +27,16 @@
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ImageButton
+                android:layout_margin="15dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_add_white_24dp"
+                android:background="@layout/floating_action_button"
+                android:id="@+id/imageButton"
+                android:layout_gravity="right|bottom" />
+
         </FrameLayout>
 
         <ListView android:id="@+id/slide_menu"
