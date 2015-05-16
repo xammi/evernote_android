@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activity.SplashScreen"
+            android:name=".activity.HelloEDAM"
             android:label="@string/title_activity_splash_screen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,10 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.auth.LoginActivity"
-            android:label="@string/title_activity_login">
-        </activity>
+
         <activity
             android:name=".activity.main.MainActivity"
             android:label="@string/app_name" >
@@ -56,19 +53,7 @@
             android:name=".provider.EvernoteContentProvider"
             android:authorities="tp.evernote.provider.notes" />
 
-        <service android:name=".sync.EvernoteService" />
 
-        <service
-            android:name=".activity.auth.EvernoteAuthService"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/evernote_authenticator" />
-        </service>
 
     </application>
 
