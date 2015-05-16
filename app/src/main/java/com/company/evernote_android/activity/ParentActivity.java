@@ -23,10 +23,11 @@ package com.company.evernote_android.activity;/*
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import android.app.Activity;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
@@ -47,7 +48,7 @@ import java.util.List;
  *
  * In this example, it also takes care of dialogs
  */
-public class ParentActivity extends Activity {
+public class ParentActivity extends ActionBarActivity {
 
     private static final String LOGTAG = "ParentActivity";
 
@@ -60,8 +61,8 @@ public class ParentActivity extends Activity {
 
     // Your Evernote API key. See http://dev.evernote.com/documentation/cloud/
     // Please obfuscate your code to help keep these values secret.
-    private static final String CONSUMER_KEY = "You consumer key";
-    private static final String CONSUMER_SECRET = "Your consumer secret";
+    private static final String CONSUMER_KEY = "eugene07";
+    private static final String CONSUMER_SECRET = "fe5beebef36a4335";
 
     // Initial development is done on Evernote's testing service, the sandbox.
     // Change to HOST_PRODUCTION to use the Evernote production service
@@ -82,7 +83,7 @@ public class ParentActivity extends Activity {
     protected EvernoteSession mEvernoteSession;
     protected final int DIALOG_PROGRESS = 101;
 
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //Set up the Evernote Singleton Session

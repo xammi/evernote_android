@@ -45,10 +45,10 @@
     <string name="sync">Синхронизация</string>
     <string name="sync_settings_summary">Sync</string>
     <string name="general_settings">Главные настройки</string>
-    <string name="action_settings">Настройки</string>
     <string name="logo_content_description">logo</string>
     <string name="search">Search</string>
 
+    <string name="action_logout">Выйти</string>
 
     <string name="err_creating_note">Error creating new Evernote note</string>
     <string name="msg_image_saved">Image saved to Evernote</string>

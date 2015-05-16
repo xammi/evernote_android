@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,11 +20,15 @@ import android.widget.ListView;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
+import com.company.evernote_android.activity.ParentActivity;
+import com.evernote.client.android.InvalidAuthenticationException;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ParentActivity {
+
+    private final static String LOGTAG = "MainActivity";
 
     private DrawerLayout drawerLayout;
     private ListView slideMenu;
@@ -104,7 +109,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(slideMenu);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_logout).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -152,15 +157,15 @@ public class MainActivity extends ActionBarActivity {
         }
 
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            try {
+                mEvernoteSession.logOut(MainActivity.this);
+            }
+            catch (InvalidAuthenticationException e) {
+                Log.e(LOGTAG, e.getMessage());
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public static void startMainActivity(Context ctx) {
-        Intent intent = new Intent(ctx, MainActivity.class);
-        ctx.startActivity(intent);
-        ((Activity) ctx).finish();
     }
 }

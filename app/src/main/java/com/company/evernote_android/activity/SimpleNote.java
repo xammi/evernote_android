@@ -101,7 +101,7 @@ public class SimpleNote extends ParentActivity {
         }
     };
 
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.simple_note);
 
