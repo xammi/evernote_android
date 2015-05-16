@@ -37,36 +37,7 @@ public class NewNoteActivity extends SessionHolder {
     private EditText mEditTextContent;
 
     private String mSelectedNotebookGuid;
-
     private ClientAPI mService = null;
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            QueryHelper.QueryHelperBinder binder = (QueryHelper.QueryHelperBinder)iBinder;
-            mService = binder.getClientApiService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mService = null;
-        }
-    };
-
-    private OnClientCallback<Note> mNoteCreateCallback = new OnClientCallback<Note>() {
-        @Override
-        public void onSuccess(Note note) {
-            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
-            removeDialog(DIALOG_PROGRESS);
-        }
-
-        @Override
-        public void onException(Exception exception) {
-            Log.e(LOGTAG, "Error saving note", exception);
-            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
-            removeDialog(DIALOG_PROGRESS);
-        }
-    };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +61,19 @@ public class NewNoteActivity extends SessionHolder {
         mEditTextContent = (EditText) findViewById(R.id.text_content);
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            QueryHelper.QueryHelperBinder binder = (QueryHelper.QueryHelperBinder)iBinder;
+            mService = binder.getClientApiService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mService = null;
+        }
+    };
+
     @Override
     public void onStart() {
         super.onStart();
@@ -105,9 +89,7 @@ public class NewNoteActivity extends SessionHolder {
         }
     }
 
-    /**
-     * Saves text field content as note to selected notebook, or default notebook if no notebook select
-     */
+
     public void saveNote(View view) {
         String title = mEditTextTitle.getText().toString();
         String content = mEditTextContent.getText().toString();
@@ -130,9 +112,8 @@ public class NewNoteActivity extends SessionHolder {
             }
             showDialog(DIALOG_PROGRESS);
             try {
-                mService.insertNote(title.trim(), content, Long.parseLong(mSelectedNotebookGuid));
+                mService.insertNote(title.trim(), content, 1);
                 mEvernoteSession.getClientFactory().createNoteStoreClient().createNote(note, mNoteCreateCallback);
-
             }
             catch (TTransportException exception) {
                 Log.e(LOGTAG, "Error creating notestore", exception);
@@ -143,6 +124,21 @@ public class NewNoteActivity extends SessionHolder {
             super.createNoteInAppLinkedNotebook(note, mNoteCreateCallback);
         }
     }
+
+    private OnClientCallback<Note> mNoteCreateCallback = new OnClientCallback<Note>() {
+        @Override
+        public void onSuccess(Note note) {
+            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
+            removeDialog(DIALOG_PROGRESS);
+        }
+
+        @Override
+        public void onException(Exception exception) {
+            Log.e(LOGTAG, "Error saving note", exception);
+            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
+            removeDialog(DIALOG_PROGRESS);
+        }
+    };
 
 
     public void selectNotebook(View view) {

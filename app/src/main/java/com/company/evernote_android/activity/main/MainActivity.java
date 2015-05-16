@@ -1,5 +1,7 @@
 package com.company.evernote_android.activity.main;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -12,8 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
@@ -163,6 +167,36 @@ public class MainActivity extends SessionHolder {
             }
             return true;
         }
+        else if (id == R.id.action_add_notebook) {
+            createNotebook();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createNotebook() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final EditText edittext= new EditText(MainActivity.this);
+        builder.setMessage("Новый блокнот");
+        builder.setTitle("Введите название");
+
+        builder.setView(edittext);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String notebookName = edittext.getText().toString();
+                Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+
     }
 }

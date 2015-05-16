@@ -51,9 +51,15 @@
 
         <provider
             android:name=".provider.EvernoteContentProvider"
-            android:authorities="tp.evernote.provider.notes" />
+            android:authorities="com.company.evernote_android.provider"
+            android:exported="false"
+            />
 
-
+        <service
+            android:name=".provider.QueryHelper"
+            android:enabled="true"
+            android:exported="false"
+            />
 
     </application>
 
