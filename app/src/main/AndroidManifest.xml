@@ -48,6 +48,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.main.MainActivity" />
         </activity>
+        <activity
+            android:name=".activity.SimpleNote"
+            android:label="@string/simple_note" />
 
         <provider
             android:name=".provider.EvernoteContentProvider"
