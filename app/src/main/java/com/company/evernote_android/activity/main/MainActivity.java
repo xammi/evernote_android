@@ -119,6 +119,8 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
+        requestId = evernoteServiceHelper.getNotesByNotebookGuid("a028ef40-837e-467a-b38a-fd8fcb9b4add", 10);
+
         IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
         registerReceiver(broadcastReceiver, filter);
 
