@@ -104,6 +104,8 @@ public class NewNoteActivity extends ActionBarActivity {
         note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
         boolean result = mService.insertNote(title.trim(), content, mSelectedNotebook);
 
+        mService.getNotebook(mSelectedNotebook).getGuid();
+
         if (result) {
             Log.d(LOGTAG, "Note was saved");
             Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
