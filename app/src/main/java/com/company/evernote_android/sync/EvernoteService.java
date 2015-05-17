@@ -41,13 +41,7 @@ public class EvernoteService extends IntentService {
         requestCallback = intent.getParcelableExtra(REQUEST_CALLBACK);
         requestIntent.put(requestType, intent);
 
-
-        EvernoteSession mEvernoteSession = EvernoteSession.getInstance(this,
-                EvernoteSessionConstant.CONSUMER_KEY,
-                EvernoteSessionConstant.CONSUMER_SECRET,
-                EvernoteSessionConstant.EVERNOTE_SERVICE,
-                EvernoteSessionConstant.SUPPORT_APP_LINKED_NOTEBOOKS
-        );
+        EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(this);
 
         switch (requestType) {
             case TYPE_GET_NOTEBOOKS:
