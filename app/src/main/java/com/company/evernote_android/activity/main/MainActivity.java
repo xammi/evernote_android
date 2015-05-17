@@ -111,12 +111,14 @@ public class MainActivity extends ActionBarActivity {
                 long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
                 int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
+                inflateSidebar();
+
                 if (showSyncMessageFlag && resultRequestId == notebooksRequestId) {
                     showToast(resultCode, "Синхронизация блокнотов прошла успешно", "Ошибка при синхронизации блокнотов");
                 } else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
                     showToast(resultCode, "Синхронизация заметок прошла успешно", "Ошибка при синхронизации заметок");
                 } else if (resultRequestId == saveNotebookRequestId) {
-                    showToast(resultCode, "Блокното успешно сохранен", "Ошибка при сохранении блокнота");
+                    showToast(resultCode, "Блокнот успешно сохранен", "Ошибка при сохранении блокнота");
                 }
             }
         };
@@ -329,7 +331,6 @@ public class MainActivity extends ActionBarActivity {
                 String notebookName = edittext.getText().toString();
 //                mService.insertNotebook(notebookName);
                 saveNotebookRequestId = evernoteServiceHelper.saveNotebook(notebookName);
-                inflateSidebar();
             }
         });
 
