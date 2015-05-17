@@ -66,6 +66,20 @@ public class EvernoteServiceHelper {
         return result.getRequestId();
     }
 
+    public long saveNotebook(String notebookName) {
+        Result result = makeRequest(EvernoteService.TYPE_SAVE_NOTEBOOK);
+
+        if (result.isPending()) {
+            return result.getRequestId();
+        }
+
+        Intent intent = result.getIntent();
+        intent.putExtra("notebookName", notebookName);
+        context.startService(intent);
+
+        return result.getRequestId();
+    }
+
 
     private Result makeRequest(String type_request) {
 
@@ -89,11 +103,15 @@ public class EvernoteServiceHelper {
 
             switch (requestType) {
                 case EvernoteService.TYPE_GET_NOTEBOOKS:
-                    pendingRequests.remove(EvernoteService.TYPE_GET_NOTEBOOKS);
+                    pendingRequests.remove(requestType);
                     break;
                 case EvernoteService.TYPE_GET_NOTES:
-                    pendingRequests.remove(EvernoteService.TYPE_GET_NOTES);
+                    pendingRequests.remove(requestType);
                     break;
+                case EvernoteService.TYPE_SAVE_NOTEBOOK:
+                    pendingRequests.remove(requestType);
+                    break;
+
             }
 
             Intent resultBroadcast = new Intent(ACTION_REQUEST_RESULT);

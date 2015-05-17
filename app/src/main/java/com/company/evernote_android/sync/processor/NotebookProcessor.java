@@ -7,6 +7,8 @@ import static com.company.evernote_android.provider.EvernoteContract.*;
 import com.company.evernote_android.sync.EvernoteService;
 import com.company.evernote_android.sync.rest.GetNotebooksCallback;
 import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
+import com.company.evernote_android.sync.rest.SaveNotebookCallback;
+import com.company.evernote_android.sync.rest.SaveNotebookRestMethod;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.Notebook;
@@ -19,17 +21,18 @@ import java.util.List;
  */
 public class NotebookProcessor {
 
-    private Context context;
     private ProcessorCallback processorCallback;
 
-    public NotebookProcessor(Context context) {
-        this.context = context;
+    public NotebookProcessor(ProcessorCallback callback) {
+        this.processorCallback = callback;
     }
 
-    public void  getNotebooks(ProcessorCallback callback, EvernoteSession session) {
-
-        processorCallback = callback;
+    public void  getNotebooks(EvernoteSession session) {
         GetNotebooksRestMethod.execute(makeGetNotebooksCallback(), session);
+    }
+
+    public void saveNotebook(EvernoteSession session, String notebookName) {
+        SaveNotebookRestMethod.execute(makeSaveNotebookCallback(), session, notebookName);
 
     }
 
@@ -56,6 +59,24 @@ public class NotebookProcessor {
                 }
 
                 processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTEBOOKS);
+
+            }
+        };
+        return callback;
+    }
+
+    private SaveNotebookCallback makeSaveNotebookCallback() {
+        SaveNotebookCallback callback = new SaveNotebookCallback() {
+            @Override
+            public void sendNotebook(Notebook notebook, int statusCode) {
+
+                if (statusCode == StatusCode.OK) {
+
+                    // create Notebook in ContentProvider
+
+                }
+
+                processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTEBOOK);
 
             }
         };

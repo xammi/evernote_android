@@ -24,6 +24,7 @@ public class EvernoteService extends IntentService {
     public static final String ACTION_TYPE = "ACTION_TYPE";
     public static final String TYPE_GET_NOTES = "GET_NOTES";
     public static final String TYPE_GET_NOTEBOOKS = "GET_NOTEBOOKS";
+    public static final String TYPE_SAVE_NOTEBOOK = "SAVE_NOTEBOOK";
 
     private Map<String, Intent> requestIntent = new HashMap<>();
     private ResultReceiver requestCallback;
@@ -42,22 +43,28 @@ public class EvernoteService extends IntentService {
         requestIntent.put(requestType, intent);
 
         EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(this);
-
+        NotebookProcessor notebookProcessor;
         switch (requestType) {
+
             case TYPE_GET_NOTEBOOKS:
-                NotebookProcessor notebookProcessor = new NotebookProcessor(getApplicationContext());
-                notebookProcessor.getNotebooks(makeNoteProcessorCallback(), mEvernoteSession);
+                notebookProcessor = new NotebookProcessor(makeProcessorCallback());
+                notebookProcessor.getNotebooks(mEvernoteSession);
                 break;
             case TYPE_GET_NOTES:
                 int maxNotes = intent.getIntExtra("maxNotes", 0);
-                NoteProcessor noteProcessor = new NoteProcessor(getApplicationContext());
-                noteProcessor.getNotes(makeNoteProcessorCallback(), mEvernoteSession, maxNotes);
+                NoteProcessor noteProcessor = new NoteProcessor(makeProcessorCallback());
+                noteProcessor.getNotes(mEvernoteSession, maxNotes);
                 break;
+            case TYPE_SAVE_NOTEBOOK:
+                String notebookName = intent.getStringExtra("notebookName");
+                notebookProcessor = new NotebookProcessor(makeProcessorCallback());
+                notebookProcessor.saveNotebook(mEvernoteSession, notebookName);
+
         }
 
     }
 
-    private ProcessorCallback makeNoteProcessorCallback() {
+    private ProcessorCallback makeProcessorCallback() {
         ProcessorCallback callback = new ProcessorCallback() {
             @Override
             public void send(int resultCode, String requestType) {

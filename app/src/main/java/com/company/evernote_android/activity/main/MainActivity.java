@@ -51,7 +51,6 @@ import com.company.evernote_android.sync.EvernoteServiceHelper;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.InvalidAuthenticationException;
-import com.evernote.edam.type.Notebook;
 
 
 import java.util.ArrayList;
@@ -73,6 +72,7 @@ public class MainActivity extends ActionBarActivity {
     private EvernoteServiceHelper evernoteServiceHelper;
     private long notebooksRequestId;
     private long notesRequestId;
+    private long saveNotebookRequestId;
     private ClientAPI mService = null;
 
     private BroadcastReceiver broadcastReceiver;
@@ -102,14 +102,24 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setLogo(R.drawable.ic_app_logo);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
 
+        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
         syncNotebooksAndNotes();
+
+
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-            if (showSyncMessageFlag) {
-                showSyncMessage(intent);
-            }
+                long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+                int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
+
+                if (showSyncMessageFlag && resultRequestId == notebooksRequestId) {
+                    showToast(resultCode, "Синхронизация блокнотов прошла успешно", "Ошибка при синхронизации блокнотов");
+                } else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
+                    showToast(resultCode, "Синхронизация заметок прошла успешно", "Ошибка при синхронизации заметок");
+                } else if (resultRequestId == saveNotebookRequestId) {
+                    showToast(resultCode, "Блокното успешно сохранен", "Ошибка при сохранении блокнота");
+                }
             }
         };
         IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
@@ -319,13 +329,8 @@ public class MainActivity extends ActionBarActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
-                if (mService.insertNotebook(notebookName)) {
-                    inflateSidebar();
-                    Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), R.string.err_creating_notebook, Toast.LENGTH_LONG).show();
-                }
+                saveNotebookRequestId = evernoteServiceHelper.saveNotebook(notebookName);
+                inflateSidebar();
             }
         });
 
@@ -345,36 +350,20 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void syncNotebooksAndNotes() {
-        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
         notebooksRequestId = evernoteServiceHelper.getNotebooks();
         notesRequestId = evernoteServiceHelper.getAllNotes(100);
     }
 
-    private void showSyncMessage(Intent intent) {
-        long resulRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
 
-        if (notebooksRequestId == resulRequestId) {
-            String message;
-            if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
-                message = "Notebook update success";
-            } else {
-                message = "Notebook update error";
-            }
-
-            Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-            toast.show();
+    private void showToast(int statusCode, String messageOk, String messageError) {
+        String message;
+        if (statusCode == StatusCode.OK) {
+            message = messageOk;
+        } else {
+            message = messageError;
         }
-
-        if (notesRequestId == resulRequestId) {
-            String message;
-            if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
-                message = "Notes update success";
-            } else {
-                message = "Notes update error";
-            }
-
-            Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
+
 }

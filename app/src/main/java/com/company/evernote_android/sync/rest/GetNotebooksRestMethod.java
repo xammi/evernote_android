@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class GetNotebooksRestMethod {
 
+    private static String LOGTAG = "GetNotebooksRestMethod: ";
+
     public GetNotebooksRestMethod() {
     }
 
@@ -35,8 +37,8 @@ public class GetNotebooksRestMethod {
                     }
                 });
 
-            } catch (TTransportException e) {
-                e.getMessage();
+            } catch (TTransportException exception) {
+                Log.e(LOGTAG, "getNotebooks exception:", exception);
             }
         }
     }

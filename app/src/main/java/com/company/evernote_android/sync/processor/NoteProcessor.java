@@ -18,16 +18,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class NoteProcessor {
 
-    private Context context;
     private ProcessorCallback processorCallback;
 
-    public NoteProcessor(Context context) {
-        this.context = context;
+    public NoteProcessor(ProcessorCallback callback) {
+        this.processorCallback = callback;
     }
 
-    public void  getNotes(ProcessorCallback callback, EvernoteSession session, int maxNotes) {
-
-        processorCallback = callback;
+    public void  getNotes(EvernoteSession session, int maxNotes) {
         GetNotesRestMethod.execute(makeGetNotesCallback(), session, maxNotes);
 
     }
