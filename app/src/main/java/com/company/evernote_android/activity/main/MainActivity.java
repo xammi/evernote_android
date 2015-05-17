@@ -336,7 +336,12 @@ public class MainActivity extends ActionBarActivity {
         });
 
         builder.show();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     private void syncNotebooksAndNotes() {
