@@ -22,12 +22,7 @@ public class SplashScreen extends ActionBarActivity {
         setContentView(R.layout.activity_splash_screen);
         final Context context = SplashScreen.this;
 
-        final EvernoteSession mEvernoteSession = EvernoteSession.getInstance(this,
-                EvernoteSessionConstant.CONSUMER_KEY,
-                EvernoteSessionConstant.CONSUMER_SECRET,
-                EvernoteSessionConstant.EVERNOTE_SERVICE,
-                EvernoteSessionConstant.SUPPORT_APP_LINKED_NOTEBOOKS
-        );
+        final EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(context);
 
         new Handler().postDelayed(new Runnable() {
             @Override

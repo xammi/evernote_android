@@ -61,7 +61,7 @@
 
 
         <service
-            android:name=".provider.DBWriteService"
+            android:name=".provider.DBService"
             android:enabled="true"
             android:exported="false"
             />

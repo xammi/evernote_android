@@ -3,10 +3,14 @@ package com.company.evernote_android.activity.main;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -26,6 +30,8 @@ import android.widget.Toast;
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
 import com.company.evernote_android.activity.ReadNoteActivity;
+import com.company.evernote_android.provider.ClientAPI;
+import com.company.evernote_android.provider.DBService;
 import com.company.evernote_android.utils.EvernoteSessionConstant;
 
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
@@ -53,7 +59,7 @@ public class MainActivity extends ActionBarActivity {
     private String[] slideMenuTitles;
 
     private EvernoteServiceHelper evernoteServiceHelper;
-    private GetNotebooksRestMethod getNotebooksRestMethod;
+    private ClientAPI mService = null;
 
     ImageButton FAB;
 
@@ -155,7 +161,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (fragment != null) {
             FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.list_frame, fragment).commit();
         }
     }
 
@@ -167,6 +173,12 @@ public class MainActivity extends ActionBarActivity {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = drawerLayout.isDrawerOpen(slideMenu);
         menu.findItem(R.id.action_logout).setVisible(!drawerOpen);
+        if (!drawerOpen) {
+            FAB.setVisibility(View.VISIBLE);
+        }
+        else {
+            FAB.setVisibility(View.GONE);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -209,14 +221,7 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_logout) {
             try {
-
-                final EvernoteSession mEvernoteSession = EvernoteSession.getInstance(this,
-                        EvernoteSessionConstant.CONSUMER_KEY,
-                        EvernoteSessionConstant.CONSUMER_SECRET,
-                        EvernoteSessionConstant.EVERNOTE_SERVICE,
-                        EvernoteSessionConstant.SUPPORT_APP_LINKED_NOTEBOOKS
-                );
-
+                EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(MainActivity.this);
                 mEvernoteSession.logOut(MainActivity.this);
             }
             catch (InvalidAuthenticationException e) {
@@ -231,6 +236,34 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            DBService.DBWriteBinder binder = (DBService.DBWriteBinder)iBinder;
+            mService = binder.getClientApiService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mService = null;
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, DBService.class);
+        this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mService != null) {
+            this.unbindService(serviceConnection);
+        }
+    }
+
     private void createNotebook() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -243,6 +276,7 @@ public class MainActivity extends ActionBarActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
+                mService.insertNotebook(notebookName);
                 Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
             }
         });

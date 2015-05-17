@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NavUtils;
@@ -20,15 +21,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.company.evernote_android.R;
-import com.company.evernote_android.provider.DBWriteAPI;
-import com.company.evernote_android.provider.DBWriteService;
+import com.company.evernote_android.provider.ClientAPI;
+import com.company.evernote_android.provider.DBService;
 import com.evernote.client.android.EvernoteUtil;
-import com.evernote.client.android.OnClientCallback;
 import com.evernote.edam.type.Note;
-import com.evernote.edam.type.Notebook;
-import com.evernote.thrift.transport.TTransportException;
-
-import java.util.List;
 
 
 public class NewNoteActivity extends ActionBarActivity {
@@ -37,8 +33,8 @@ public class NewNoteActivity extends ActionBarActivity {
     private EditText mEditTextTitle;
     private EditText mEditTextContent;
 
-    private String mSelectedNotebookGuid;
-    private DBWriteAPI mService = null;
+    private ClientAPI mService = null;
+    private int mSelectedNotebook = 1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,14 +56,12 @@ public class NewNoteActivity extends ActionBarActivity {
 
         mEditTextTitle = (EditText) findViewById(R.id.text_title);
         mEditTextContent = (EditText) findViewById(R.id.text_content);
-
-
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            DBWriteService.DBWriteBinder binder = (DBWriteService.DBWriteBinder)iBinder;
+            DBService.DBWriteBinder binder = (DBService.DBWriteBinder)iBinder;
             mService = binder.getClientApiService();
         }
 
@@ -80,7 +74,7 @@ public class NewNoteActivity extends ActionBarActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, DBWriteService.class);
+        Intent intent = new Intent(this, DBService.class);
         this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -107,103 +101,52 @@ public class NewNoteActivity extends ActionBarActivity {
 
         //TODO: line breaks need to be converted to render in ENML
         note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
+        boolean result = mService.insertNote(title.trim(), content, 1);
 
-//        if (! mEvernoteSession.getAuthenticationResult().isAppLinkedNotebook()) {
-//            // If User has selected a notebook guid, assign it now
-//            if (!TextUtils.isEmpty(mSelectedNotebookGuid)) {
-//                note.setNotebookGuid(mSelectedNotebookGuid);
-//            }
-//            showDialog(DIALOG_PROGRESS);
-//            try {
-//                mService.insertNote(title.trim(), content, 1);
-//                mEvernoteSession.getClientFactory().createNoteStoreClient().createNote(note, mNoteCreateCallback);
-//            }
-//            catch (TTransportException exception) {
-//                Log.e(LOGTAG, "Error creating notestore", exception);
-//                Toast.makeText(getApplicationContext(), R.string.error_creating_notestore, Toast.LENGTH_LONG).show();
-//                removeDialog(DIALOG_PROGRESS);
-//            }
-//        } else {
-//            super.createNoteInAppLinkedNotebook(note, mNoteCreateCallback);
-//        }
+        if (result) {
+            Log.d(LOGTAG, "Note was saved");
+            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
+        }
+        else {
+            Log.d(LOGTAG, "Error saving note");
+            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
+        }
     }
 
-//    private OnClientCallback<Note> mNoteCreateCallback = new OnClientCallback<Note>() {
-//        @Override
-//        public void onSuccess(Note note) {
-//            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
-//            removeDialog(DIALOG_PROGRESS);
-//        }
-//
-//        @Override
-//        public void onException(Exception exception) {
-//            Log.e(LOGTAG, "Error saving note", exception);
-//            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
-//            removeDialog(DIALOG_PROGRESS);
-//        }
-//    };
-//
-//
-//    public void selectNotebook(View view) {
-//        if (mEvernoteSession.isAppLinkedNotebook()) {
-//            Toast.makeText(getApplicationContext(), getString(R.string.CANT_LIST_APP_LNB), Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//
-//        try {
-//            mEvernoteSession.getClientFactory().createNoteStoreClient().listNotebooks(mClientCallback);
-//        } catch (TTransportException exception) {
-//            Log.e(LOGTAG, "Error creating notestore", exception);
-//            Toast.makeText(getApplicationContext(), R.string.error_creating_notestore, Toast.LENGTH_LONG).show();
-//            removeDialog(DIALOG_PROGRESS);
-//        }
-//    }
-//
-//    private OnClientCallback<List<Notebook>> mClientCallback = new OnClientCallback<List<Notebook>>() {
-//        int mSelectedPos = -1;
-//
-//        @Override
-//        public void onSuccess(final List<Notebook> notebooks) {
-//            CharSequence[] names = new CharSequence[notebooks.size()];
-//            int selected = -1;
-//            Notebook notebook = null;
-//            for (int index = 0; index < notebooks.size(); index++) {
-//                notebook = notebooks.get(index);
-//                names[index] = notebook.getName();
-//                if (notebook.getGuid().equals(mSelectedNotebookGuid)) {
-//                    selected = index;
-//                }
-//            }
-//
-//            AlertDialog.Builder builder = new AlertDialog.Builder(NewNoteActivity.this);
-//
-//            builder
-//                    .setSingleChoiceItems(names, selected, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            mSelectedPos = which;
-//                        }
-//                    })
-//                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            if (mSelectedPos > -1) {
-//                                mSelectedNotebookGuid = notebooks.get(mSelectedPos).getGuid();
-//                            }
-//                            dialog.dismiss();
-//                        }
-//                    })
-//                    .create()
-//                    .show();
-//        }
-//
-//        @Override
-//        public void onException(Exception exception) {
-//            Log.e(LOGTAG, "Error listing notebooks", exception);
-//            Toast.makeText(getApplicationContext(), R.string.error_listing_notebooks, Toast.LENGTH_LONG).show();
-//            removeDialog(DIALOG_PROGRESS);
-//        }
-//    };
+
+    public void selectNotebook(View view) {
+        Cursor cursor = mService.getAllNotebooks();
+
+        if (cursor != null) {
+            CharSequence[] names = new CharSequence[cursor.getCount()];
+            int I = 0;
+            while (cursor.moveToNext()) {
+                names[I++] = cursor.getString(1);
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(NewNoteActivity.this);
+
+            builder.setSingleChoiceItems(names, mSelectedNotebook, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mSelectedNotebook = which;
+                        }
+                    });
+
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+            builder.create().show();
+        }
+        else {
+            Log.e(LOGTAG, "Error listing notebooks");
+            Toast.makeText(getApplicationContext(), R.string.error_listing_notebooks, Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
