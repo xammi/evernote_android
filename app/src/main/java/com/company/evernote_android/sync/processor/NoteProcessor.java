@@ -1,19 +1,52 @@
 package com.company.evernote_android.sync.processor;
 
+import android.content.Context;
+
+import com.company.evernote_android.sync.rest.GetNotebooksCallback;
+import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
+import com.company.evernote_android.sync.rest.GetNotesCallback;
+import com.company.evernote_android.sync.rest.GetNotesRestMethod;
+import com.company.evernote_android.utils.StatusCode;
+import com.evernote.client.android.EvernoteSession;
+import com.evernote.edam.type.Note;
+
+import java.util.List;
+
 /**
  * Created by Zalman on 12.04.2015.
  */
 public class NoteProcessor {
 
-    // TODO
-    void  getNotes() {
+    private Context context;
+    private ProcessorCallback processorCallback;
 
-        // call the REST method
+    public NoteProcessor(Context context) {
+        this.context = context;
+    }
 
-        // update NoteContentProvider
+    public void  getNotes(ProcessorCallback callback, EvernoteSession session, String guid, int maxNotes) {
 
-        //callback to service
+        processorCallback = callback;
+        GetNotesRestMethod.execute(makeGetNotesCallback(), session, guid, maxNotes);
 
+    }
+
+    private GetNotesCallback makeGetNotesCallback() {
+        GetNotesCallback callback = new GetNotesCallback() {
+            @Override
+            public void sendNotes(List<Note> notebooks, int statusCode) {
+
+                if (statusCode == StatusCode.OK) {
+
+                    // update Notebooks in ContentProvider
+
+                }
+
+                processorCallback.send(statusCode);
+
+            }
+        };
+        return callback;
     }
 
 }

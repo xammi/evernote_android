@@ -1,5 +1,6 @@
 package com.company.evernote_android.sync.rest;
 
+import com.company.evernote_android.utils.StatusCode;
 import com.evernote.edam.type.Notebook;
 
 import java.util.List;
@@ -9,6 +10,6 @@ import java.util.List;
  */
 public interface GetNotebooksCallback {
 
-    public void sendNotebooks(List<Notebook> notebooks);
+    public void sendNotebooks(List<Notebook> notebooks, int statusCode);
 
 }
