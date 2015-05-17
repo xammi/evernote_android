@@ -1,10 +1,7 @@
 package com.company.evernote_android.sync.rest;
 
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.company.evernote_android.activity.SessionHolder;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.OnClientCallback;
 import com.evernote.edam.notestore.NoteFilter;

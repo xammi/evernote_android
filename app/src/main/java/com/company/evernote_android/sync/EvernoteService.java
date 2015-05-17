@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import com.company.evernote_android.activity.SessionHolder;
+import com.company.evernote_android.utils.EvernoteSessionConstant;
 import com.company.evernote_android.sync.processor.NotebookProcessor;
 import com.company.evernote_android.sync.processor.ProcessorCallback;
 import com.evernote.client.android.EvernoteSession;
@@ -38,10 +38,10 @@ public class EvernoteService extends IntentService {
 
 
         EvernoteSession mEvernoteSession = EvernoteSession.getInstance(this,
-                SessionHolder.CONSUMER_KEY,
-                SessionHolder.CONSUMER_SECRET,
-                SessionHolder.EVERNOTE_SERVICE,
-                SessionHolder.SUPPORT_APP_LINKED_NOTEBOOKS
+                EvernoteSessionConstant.CONSUMER_KEY,
+                EvernoteSessionConstant.CONSUMER_SECRET,
+                EvernoteSessionConstant.EVERNOTE_SERVICE,
+                EvernoteSessionConstant.SUPPORT_APP_LINKED_NOTEBOOKS
         );
 
         switch (requestType) {

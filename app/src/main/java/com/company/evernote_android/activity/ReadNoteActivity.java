@@ -1,13 +1,14 @@
 package com.company.evernote_android.activity;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.company.evernote_android.R;
 
 
-public class ReadNoteActivity extends SessionHolder {
+public class ReadNoteActivity extends ActionBarActivity {
     private static final String LOGTAG = "ReadNoteActivity";
 
     @Override

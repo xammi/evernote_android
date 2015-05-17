@@ -57,7 +57,7 @@ public class EvernoteServiceHelper {
     }
 
     // TODO
-    public long getNotebooks(EvernoteSession evernoteSession) {
+    public long getNotebooks() {
 
         // find this method in queue
 

@@ -3,19 +3,15 @@ package com.company.evernote_android.activity.main;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.database.Cursor;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,36 +21,26 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import android.widget.SimpleCursorAdapter;
-
 import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
 import com.company.evernote_android.activity.ReadNoteActivity;
-import com.company.evernote_android.activity.SessionHolder;
+import com.company.evernote_android.utils.EvernoteSessionConstant;
 
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
 
 import com.company.evernote_android.sync.EvernoteServiceHelper;
 import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
 
+import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.InvalidAuthenticationException;
-
-import com.evernote.client.android.OnClientCallback;
-import com.evernote.edam.notestore.NoteFilter;
-import com.evernote.edam.notestore.NotesMetadataList;
-import com.evernote.edam.notestore.NotesMetadataResultSpec;
-import com.evernote.edam.type.Notebook;
-import com.evernote.thrift.transport.TTransportException;
-
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class MainActivity extends SessionHolder {
+public class MainActivity extends ActionBarActivity {
 
     private final static String LOGTAG = "MainActivity";
 
@@ -107,7 +93,7 @@ public class MainActivity extends SessionHolder {
 
         //start test
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
-        evernoteServiceHelper.getNotebooks(mEvernoteSession);
+        evernoteServiceHelper.getNotebooks();
 
 
 
@@ -223,6 +209,14 @@ public class MainActivity extends SessionHolder {
         int id = item.getItemId();
         if (id == R.id.action_logout) {
             try {
+
+                final EvernoteSession mEvernoteSession = EvernoteSession.getInstance(this,
+                        EvernoteSessionConstant.CONSUMER_KEY,
+                        EvernoteSessionConstant.CONSUMER_SECRET,
+                        EvernoteSessionConstant.EVERNOTE_SERVICE,
+                        EvernoteSessionConstant.SUPPORT_APP_LINKED_NOTEBOOKS
+                );
+
                 mEvernoteSession.logOut(MainActivity.this);
             }
             catch (InvalidAuthenticationException e) {
