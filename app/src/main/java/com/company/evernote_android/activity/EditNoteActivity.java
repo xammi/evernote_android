@@ -1,6 +1,8 @@
 package com.company.evernote_android.activity;
 
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -50,15 +52,30 @@ public class EditNoteActivity extends NewNoteActivity {
         }
     };
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, DBService.class);
+        this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mService != null) {
+            this.unbindService(serviceConnection);
+        }
+    }
+
     private void inflateNote() {
         mNote = mService.getNote(noteId);
 
         if (mNote != null) {
             EditText title = (EditText) findViewById(R.id.text_title);
-            title.setText(mNote.getTitle());
+            title.setText(mNote.getTitle(), TextView.BufferType.EDITABLE);
 
             EditText content = (EditText) findViewById(R.id.text_content);
-            content.setText(mNote.getContent());
+            content.setText(mNote.getContent(), TextView.BufferType.EDITABLE);
 
             mSelectedNotebook = mNote.getDeleted(); // feature
         }
