@@ -2,6 +2,7 @@ package com.company.evernote_android.sync.processor;
 
 import android.content.Context;
 
+import com.company.evernote_android.sync.EvernoteService;
 import com.company.evernote_android.sync.rest.GetNotebooksCallback;
 import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
 import com.company.evernote_android.sync.rest.GetNotesCallback;
@@ -11,6 +12,7 @@ import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.Note;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by Zalman on 12.04.2015.
@@ -24,25 +26,25 @@ public class NoteProcessor {
         this.context = context;
     }
 
-    public void  getNotes(ProcessorCallback callback, EvernoteSession session, String guid, int maxNotes) {
+    public void  getNotes(ProcessorCallback callback, EvernoteSession session, int maxNotes) {
 
         processorCallback = callback;
-        GetNotesRestMethod.execute(makeGetNotesCallback(), session, guid, maxNotes);
+        GetNotesRestMethod.execute(makeGetNotesCallback(), session, maxNotes);
 
     }
 
     private GetNotesCallback makeGetNotesCallback() {
         GetNotesCallback callback = new GetNotesCallback() {
             @Override
-            public void sendNotes(List<Note> notebooks, int statusCode) {
+            public void sendNotes(ConcurrentLinkedQueue<Note> notebooks, int statusCode) {
 
                 if (statusCode == StatusCode.OK) {
 
-                    // update Notebooks in ContentProvider
+                    // update Notes in ContentProvider
 
                 }
 
-                processorCallback.send(statusCode);
+                processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTES);
 
             }
         };

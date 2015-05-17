@@ -40,6 +40,7 @@
 
     <string name="action_logout">Выйти</string>
     <string name="action_add_notebook">Создать блокнот</string>
+    <string name="action_sync">Синхронизировать</string>
 
     <string name="label_select_button">Выбрать изображение</string>
     <string name="label_search">Поиск заметок</string>

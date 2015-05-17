@@ -8,9 +8,17 @@
         app:showAsAction="never"
         />
 
+    <item android:id="@+id/action_sync"
+        android:title="@string/action_sync"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        />
+
     <item android:id="@+id/action_logout"
         android:title="@string/action_logout"
         android:orderInCategory="200"
         app:showAsAction="never"
         />
+
+
 </menu>

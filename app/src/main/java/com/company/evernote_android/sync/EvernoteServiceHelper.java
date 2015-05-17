@@ -37,7 +37,7 @@ public class EvernoteServiceHelper {
         return instance;
     }
 
-    public long getNotesByNotebookGuid(String guid, int maxNotes) {
+    public long getAllNotes(int maxNotesInNotebook) {
 
         Result result = makeRequest(EvernoteService.TYPE_GET_NOTES);
 
@@ -46,8 +46,7 @@ public class EvernoteServiceHelper {
         }
 
         Intent intent = result.getIntent();
-        intent.putExtra("guid", guid);
-        intent.putExtra("maxNotes", maxNotes);
+        intent.putExtra("maxNotes", maxNotesInNotebook);
         context.startService(intent);
 
         return result.getRequestId();
