@@ -47,8 +47,6 @@ public class ReadNoteActivity extends ActionBarActivity {
                 NavUtils.navigateUpFromSameTask(ReadNoteActivity.this);
             }
         });
-
-        noteId = savedInstanceState.getLong(MainActivity.NOTE_ID_KEY);
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -68,6 +66,7 @@ public class ReadNoteActivity extends ActionBarActivity {
     @Override
     public void onStart() {
         super.onStart();
+        noteId = getIntent().getLongExtra(MainActivity.NOTE_ID_KEY, 1);
         Intent intent = new Intent(this, DBService.class);
         this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }

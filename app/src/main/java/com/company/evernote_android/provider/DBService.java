@@ -62,10 +62,14 @@ public class DBService extends Service implements ClientAPI {
                 null,
                 null
         );
-        if (cursor == null)
+        if (cursor == null || cursor.getCount() == 0)
             return null;
         else {
             Note note = new Note();
+            note.setTitle(cursor.getString(cursor.getColumnIndex(Notes.TITLE)));
+            note.setContent(cursor.getString(cursor.getColumnIndex(Notes.CONTENT)));
+            note.setCreated(cursor.getLong(cursor.getColumnIndex(Notes.CREATED)));
+            note.setCreated(cursor.getLong(cursor.getColumnIndex(Notes.UPDATED)));
             return note;
         }
     }
