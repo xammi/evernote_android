@@ -26,6 +26,8 @@ import static com.company.evernote_android.provider.EvernoteContract.*;
 public class NotesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private CursorAdapter mAdapter;
 
+    public final static String NOTE_ID_KEY = "note_id";
+
     private final String[] from = new String[] {Notes.TITLE, Notes.CONTENT, Notes.UPDATED};
     private final int[] to = new int[] {R.id.title, R.id.content, R.id.date};
 
@@ -43,6 +45,16 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
+
+            TextView content = (TextView) view.findViewById(R.id.content);
+            int contentIndex = cursor.getColumnIndexOrThrow(Notes.CONTENT);
+            String contentString = cursor.getString(contentIndex);
+
+            if (contentString.length() > 30) {
+                contentString = contentString.substring(0, 30) + "...";
+            }
+            content.setText(contentString);
+
             TextView date = (TextView) view.findViewById(R.id.date);
             int dateIndex = cursor.getColumnIndexOrThrow(Notes.UPDATED);
             String dateString = cursor.getString(dateIndex);
@@ -63,7 +75,7 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent intent = new Intent(getActivity(), ReadNoteActivity.class);
-        intent.putExtra("id", id);
+        intent.putExtra(NOTE_ID_KEY, id);
         startActivity(intent);
     }
 
@@ -75,7 +87,7 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
                 Notes.ALL_COLUMNS_PROJECTION,
                 Notebooks.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal(),
                 null,
-                Notes.UPDATED);
+                Notes.UPDATED + " DESC");
     }
 
     @Override

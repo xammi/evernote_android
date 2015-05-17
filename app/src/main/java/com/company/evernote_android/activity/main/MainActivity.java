@@ -55,8 +55,6 @@ public class MainActivity extends ActionBarActivity {
 
     private final static String LOGTAG = "MainActivity";
 
-    public final static String NOTE_ID_KEY = "note_id";
-
     private DrawerLayout drawerLayout;
     private ListView slideMenu;
     private ActionBarDrawerToggle drawerToggle;
@@ -78,15 +76,6 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             displayView(position);
-        }
-    }
-
-    private class NotesListClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = new Intent(MainActivity.this, ReadNoteActivity.class);
-            intent.putExtra(NOTE_ID_KEY, id);
-            startActivity(intent);
         }
     }
 

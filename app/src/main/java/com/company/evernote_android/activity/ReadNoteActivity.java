@@ -13,9 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.company.evernote_android.R;
-import com.company.evernote_android.activity.main.MainActivity;
+import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
 import com.evernote.edam.type.Note;
@@ -47,6 +48,8 @@ public class ReadNoteActivity extends ActionBarActivity {
                 NavUtils.navigateUpFromSameTask(ReadNoteActivity.this);
             }
         });
+
+        noteId = getIntent().getLongExtra(NotesFragment.NOTE_ID_KEY, 0);
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -54,7 +57,11 @@ public class ReadNoteActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             DBService.DBWriteBinder binder = (DBService.DBWriteBinder)iBinder;
             mService = binder.getClientApiService();
-            ReadNoteActivity.this.inflateNote();
+
+            if (noteId != 0) {
+                if (mService != null)
+                    inflateNote();
+            }
         }
 
         @Override
@@ -66,7 +73,6 @@ public class ReadNoteActivity extends ActionBarActivity {
     @Override
     public void onStart() {
         super.onStart();
-        noteId = getIntent().getLongExtra(MainActivity.NOTE_ID_KEY, 1);
         Intent intent = new Intent(this, DBService.class);
         this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -82,14 +88,19 @@ public class ReadNoteActivity extends ActionBarActivity {
     private void inflateNote() {
         Note note = mService.getNote(noteId);
 
-        TextView title = (TextView) findViewById(R.id.title);
-        title.setText(note.getTitle());
+        if (note != null) {
+            TextView title = (TextView) findViewById(R.id.title);
+            title.setText(note.getTitle());
 
-        TextView content = (TextView) findViewById(R.id.content);
-        content.setText(note.getContent());
+            TextView content = (TextView) findViewById(R.id.content);
+            content.setText(note.getContent());
 
-        TextView date = (TextView) findViewById(R.id.date);
-        date.setText(new Date(note.getUpdated()).toString());
+            TextView date = (TextView) findViewById(R.id.date);
+            date.setText(new Date(note.getUpdated()).toString());
+        }
+        else {
+            Toast.makeText(ReadNoteActivity.this, R.string.err_retrieving_resource, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
