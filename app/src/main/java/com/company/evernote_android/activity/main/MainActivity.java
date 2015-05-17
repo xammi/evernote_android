@@ -3,11 +3,16 @@ package com.company.evernote_android.activity.main;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.IBinder;
@@ -37,8 +42,8 @@ import com.company.evernote_android.utils.EvernoteSessionConstant;
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
 
 import com.company.evernote_android.sync.EvernoteServiceHelper;
-import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
 
+import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.InvalidAuthenticationException;
 
@@ -62,6 +67,10 @@ public class MainActivity extends ActionBarActivity {
 
     private EvernoteServiceHelper evernoteServiceHelper;
     private ClientAPI mService = null;
+
+    private BroadcastReceiver broadcastReceiver;
+    private long requestId;
+
 
     ImageButton FAB;
 
@@ -101,9 +110,28 @@ public class MainActivity extends ActionBarActivity {
 
         //start test
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
-        evernoteServiceHelper.getNotebooks();
+        requestId = evernoteServiceHelper.getNotebooks();
 
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
 
+                long resulRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+
+                if (requestId == resulRequestId) {
+
+                    if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
+                        Toast toast = Toast.makeText(context, "SUCCESS", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+
+                }
+
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
 
         // end test
 
@@ -134,6 +162,12 @@ public class MainActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             displayView(0);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     private ArrayList<SlideMenuItem> loadSlideMenuItems() {

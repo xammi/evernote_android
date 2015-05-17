@@ -7,6 +7,8 @@ import android.os.ResultReceiver;
 
 import com.evernote.client.android.EvernoteSession;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -19,9 +21,12 @@ public class EvernoteServiceHelper {
     public static String EXTRA_REQUEST_ID = "EXTRA_REQUEST_ID";
     public static String EXTRA_RESULT_CODE = "EXTRA_RESULT_CODE";
 
+    public static String TASK_NOTEBOOKS = "NOTEBOOKS";
+
     private static Object lock = new Object();
     private Context context;
     private static EvernoteServiceHelper instance;
+    private Map<String,Long> pendingRequests = new HashMap<String,Long>();
 
     private EvernoteServiceHelper(Context context) {
         this.context = context;
@@ -56,14 +61,14 @@ public class EvernoteServiceHelper {
         return requestId;
     }
 
-    // TODO
     public long getNotebooks() {
 
-        // find this method in queue
+        if(pendingRequests.containsKey(TASK_NOTEBOOKS)){
+            return pendingRequests.get(TASK_NOTEBOOKS);
+        }
 
         long requestId = generateRequestID();
-
-
+        pendingRequests.put(TASK_NOTEBOOKS, requestId);
 
         ResultReceiver serviceCallback = new ResultReceiver(null){
 
@@ -78,10 +83,8 @@ public class EvernoteServiceHelper {
         intent.putExtra(REQUEST_ID, requestId);
         intent.putExtra(EvernoteService.REQUEST_CALLBACK, serviceCallback);
         intent.putExtra(EvernoteService.REQUEST_TYPE, EvernoteService.REQUEST_TYPE_NOTEBOOK);
-        //intent.putExtra(EvernoteService.REQUEST_TYPE, context);
 
         context.startService(intent);
-
 
         return requestId;
     }
@@ -99,14 +102,13 @@ public class EvernoteServiceHelper {
 
         if (intent != null) {
             long requestId = intent.getLongExtra(REQUEST_ID, 0);
-
+            pendingRequests.remove(TASK_NOTEBOOKS);
             Intent resultBroadcast = new Intent(ACTION_REQUEST_RESULT);
             resultBroadcast.putExtra(EXTRA_REQUEST_ID, requestId);
             resultBroadcast.putExtra(EXTRA_RESULT_CODE, resultCode);
 
             context.sendBroadcast(resultBroadcast);
         }
-
 
     }
 
