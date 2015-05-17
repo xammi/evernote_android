@@ -32,11 +32,15 @@ public class NotebookProcessor {
     private GetNotebooksCallback makeGetNotebooksCallback() {
         GetNotebooksCallback callback = new GetNotebooksCallback() {
             @Override
-            public void sendNotebooks(List<Notebook> notebooks) {
+            public void sendNotebooks(List<Notebook> notebooks, int statusCode) {
 
-                // update Notebooks in ContentProvider
+                if (statusCode == StatusCode.OK) {
 
-                processorCallback.send(StatusCode.OK);
+                    // update Notebooks in ContentProvider
+
+                }
+
+                processorCallback.send(statusCode);
 
             }
         };

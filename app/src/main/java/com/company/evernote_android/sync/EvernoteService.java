@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
+import com.company.evernote_android.sync.processor.NoteProcessor;
 import com.company.evernote_android.utils.EvernoteSessionConstant;
 import com.company.evernote_android.sync.processor.NotebookProcessor;
 import com.company.evernote_android.sync.processor.ProcessorCallback;
@@ -17,9 +18,9 @@ public class EvernoteService extends IntentService {
 
     public static final String INTENT_IDENTIFIER = "INTENT_IDENTIFIER";
     public static final String REQUEST_CALLBACK = "SERVICE_CALLBACK";
-    public static final String REQUEST_TYPE = "REQUEST_TYPE";
-    public static final String REQUEST_TYPE_NOTE = "NOTE";
-    public static final String REQUEST_TYPE_NOTEBOOK = "NOTEBOOK";
+    public static final String ACTION_TYPE = "ACTION_TYPE";
+    public static final String TYPE_GET_NOTES = "GET_NOTES";
+    public static final String TYPE_GET_NOTEBOOKS = "GET_NOTEBOOKS";
 
     private Intent requestIntent;
     private ResultReceiver requestCallback;
@@ -33,7 +34,7 @@ public class EvernoteService extends IntentService {
 
         requestIntent = intent;
 
-        String requestType = requestIntent.getStringExtra(REQUEST_TYPE);
+        String requestType = requestIntent.getStringExtra(ACTION_TYPE);
         requestCallback = requestIntent.getParcelableExtra(REQUEST_CALLBACK);
 
 
@@ -45,9 +46,16 @@ public class EvernoteService extends IntentService {
         );
 
         switch (requestType) {
-            case REQUEST_TYPE_NOTEBOOK:
+            case TYPE_GET_NOTEBOOKS:
                 NotebookProcessor notebookProcessor = new NotebookProcessor(getApplicationContext());
                 notebookProcessor.getNotebooks(makeNoteProcessorCallback(), mEvernoteSession);
+                break;
+            case TYPE_GET_NOTES:
+                String guid = requestIntent.getStringExtra("guid");
+                int maxNotes = requestIntent.getIntExtra("maxNotes", 0);
+                NoteProcessor noteProcessor = new NoteProcessor(getApplicationContext());
+                noteProcessor.getNotes(makeNoteProcessorCallback(), mEvernoteSession, guid, maxNotes);
+                break;
         }
 
     }
