@@ -54,7 +54,20 @@ public class DBService extends Service implements ClientAPI {
 
     @Override
     public Note getNote(long noteId) {
-        return null;
+        String WHERE_ID = Notes._ID + "=" + ((Long) noteId).toString();
+        Cursor cursor = getContentResolver().query(
+                Notes.CONTENT_URI,
+                Notes.ALL_COLUMNS_PROJECTION,
+                WHERE_ID,
+                null,
+                null
+        );
+        if (cursor == null)
+            return null;
+        else {
+            Note note = new Note();
+            return note;
+        }
     }
 
     @Override

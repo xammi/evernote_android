@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.company.evernote_android.R;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
+import static com.company.evernote_android.provider.EvernoteContract.*;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.edam.type.Note;
 
@@ -120,8 +121,9 @@ public class NewNoteActivity extends ActionBarActivity {
         if (cursor != null) {
             CharSequence[] names = new CharSequence[cursor.getCount()];
             int I = 0;
+            int nameIndex = cursor.getColumnIndexOrThrow(Notebooks.NAME);
             while (cursor.moveToNext()) {
-                names[I++] = cursor.getString(1);
+                names[I++] = cursor.getString(nameIndex);
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(NewNoteActivity.this);

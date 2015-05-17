@@ -1,18 +1,33 @@
 package com.company.evernote_android.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.company.evernote_android.R;
+import com.company.evernote_android.activity.main.MainActivity;
+import com.company.evernote_android.provider.ClientAPI;
+import com.company.evernote_android.provider.DBService;
+import com.evernote.edam.type.Note;
+
+import java.util.Date;
 
 
 public class ReadNoteActivity extends ActionBarActivity {
     private static final String LOGTAG = "ReadNoteActivity";
+
+    private long noteId;
+    private ClientAPI mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +47,51 @@ public class ReadNoteActivity extends ActionBarActivity {
                 NavUtils.navigateUpFromSameTask(ReadNoteActivity.this);
             }
         });
+
+        noteId = savedInstanceState.getLong(MainActivity.NOTE_ID_KEY);
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            DBService.DBWriteBinder binder = (DBService.DBWriteBinder)iBinder;
+            mService = binder.getClientApiService();
+            ReadNoteActivity.this.inflateNote();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mService = null;
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, DBService.class);
+        this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mService != null) {
+            this.unbindService(serviceConnection);
+        }
+    }
+
+    private void inflateNote() {
+        Note note = mService.getNote(noteId);
+
+        TextView title = (TextView) findViewById(R.id.title);
+        title.setText(note.getTitle());
+
+        TextView content = (TextView) findViewById(R.id.content);
+        content.setText(note.getContent());
+
+        TextView date = (TextView) findViewById(R.id.date);
+        date.setText(new Date(note.getUpdated()).toString());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -19,4 +19,28 @@
         theme="@style/ThemeOverlay.AppCompat.ActionBar">
     </android.support.v7.widget.Toolbar>
 
+    <TextView android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/green"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/note_title"
+        />
+
+    <TextView android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/note_content"
+        />
+
+    <TextView android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/note_content"
+        android:background="@color/note_fragment"
+        android:paddingTop="20dp"
+        />
+
 </LinearLayout>
