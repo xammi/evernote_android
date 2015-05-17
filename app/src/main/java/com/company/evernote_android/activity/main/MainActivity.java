@@ -76,6 +76,7 @@ public class MainActivity extends ActionBarActivity {
     private ClientAPI mService = null;
 
     private BroadcastReceiver broadcastReceiver;
+    private boolean showSyncMessageFlag = false;
 
     ImageButton FAB;
 
@@ -106,35 +107,13 @@ public class MainActivity extends ActionBarActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
-                long resulRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
-
-                if (notebooksRequestId == resulRequestId) {
-                    String message;
-                    if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
-                        message = "Notebook update success";
-                    } else {
-                        message = "Notebook update error";
-                    }
-
-                    Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-
-                if (notesRequestId == resulRequestId) {
-                    String message;
-                    if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
-                       message = "Notes update success";
-                    } else {
-                        message = "Notes update error";
-                    }
-
-                    Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-
+            if (showSyncMessageFlag) {
+                showSyncMessage(intent);
+            }
             }
         };
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
 
         FAB = (ImageButton) findViewById(R.id.imageButton);
         FAB.setOnClickListener(new View.OnClickListener() {
@@ -260,8 +239,7 @@ public class MainActivity extends ActionBarActivity {
             createNotebook();
         }
         else if (id == R.id.action_sync) {
-            IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
-            registerReceiver(broadcastReceiver, filter);
+            showSyncMessageFlag = true;
             syncNotebooksAndNotes();
         }
 
@@ -365,5 +343,33 @@ public class MainActivity extends ActionBarActivity {
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
         notebooksRequestId = evernoteServiceHelper.getNotebooks();
         notesRequestId = evernoteServiceHelper.getAllNotes(100);
+    }
+
+    private void showSyncMessage(Intent intent) {
+        long resulRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+
+        if (notebooksRequestId == resulRequestId) {
+            String message;
+            if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
+                message = "Notebook update success";
+            } else {
+                message = "Notebook update error";
+            }
+
+            Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+        if (notesRequestId == resulRequestId) {
+            String message;
+            if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
+                message = "Notes update success";
+            } else {
+                message = "Notes update error";
+            }
+
+            Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
