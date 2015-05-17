@@ -23,12 +23,16 @@ public class SessionHolder extends ActionBarActivity {
 
     private static final String LOGTAG = "SessionHolder";
 
-    private static final String CONSUMER_KEY = "streambuf-8430";
-    private static final String CONSUMER_SECRET = "e92a48e112672396";
+    public static final String CONSUMER_KEY = "streambuf-8430";
+    public static final String CONSUMER_SECRET = "e92a48e112672396";
 
 
-    private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
-    private static final boolean SUPPORT_APP_LINKED_NOTEBOOKS = true;
+    public static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
+    public static final boolean SUPPORT_APP_LINKED_NOTEBOOKS = true;
+
+    public EvernoteSession getEvernoteSession() {
+        return mEvernoteSession;
+    }
 
     protected EvernoteSession mEvernoteSession;
     protected final int DIALOG_PROGRESS = 101;

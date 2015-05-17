@@ -1,8 +1,16 @@
 package com.company.evernote_android.activity.main;
 
+import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,20 +21,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+
+import android.widget.SimpleCursorAdapter;
+
 import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
+import com.company.evernote_android.activity.ReadNoteActivity;
 import com.company.evernote_android.activity.SessionHolder;
+
+import com.company.evernote_android.activity.main.fragments.NotesFragment;
+
+import com.company.evernote_android.sync.EvernoteServiceHelper;
+import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
+
 import com.evernote.client.android.InvalidAuthenticationException;
+
 import com.evernote.client.android.OnClientCallback;
 import com.evernote.edam.notestore.NoteFilter;
 import com.evernote.edam.notestore.NotesMetadataList;
 import com.evernote.edam.notestore.NotesMetadataResultSpec;
 import com.evernote.edam.type.Notebook;
 import com.evernote.thrift.transport.TTransportException;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +66,26 @@ public class MainActivity extends SessionHolder {
     private CharSequence appTitle;
     private String[] slideMenuTitles;
 
+    private EvernoteServiceHelper evernoteServiceHelper;
+    private GetNotebooksRestMethod getNotebooksRestMethod;
+
     ImageButton FAB;
+
+    private class SlideMenuClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            displayView(position);
+        }
+    }
+
+    private class NotesListClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(MainActivity.this, ReadNoteActivity.class);
+            intent.putExtra("id", id);
+            startActivity(intent);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +96,7 @@ public class MainActivity extends SessionHolder {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         slideMenu = (ListView) findViewById(R.id.slide_menu);
 
-        SlideMenuAdapter adapter = new SlideMenuAdapter(getApplicationContext(), loadSlideMenuItems());
+        SlideMenuAdapter adapter = new SlideMenuAdapter(MainActivity.this, loadSlideMenuItems());
         slideMenu.setAdapter(adapter);
         slideMenu.setOnItemClickListener(new SlideMenuClickListener());
 
@@ -64,58 +105,14 @@ public class MainActivity extends SessionHolder {
         toolbar.setLogo(R.drawable.ic_app_logo);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
 
-        // --start check rest method
-                try {
-            if (mEvernoteSession.isLoggedIn()) {
-                mEvernoteSession.getClientFactory().createNoteStoreClient().listNotebooks(new OnClientCallback<List<Notebook>>() {
-                    @Override
-                    public void onSuccess(final List<Notebook> notebooks) {
-                        List<String> namesList = new ArrayList<String>(notebooks.size());
+        //start test
+        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
+        evernoteServiceHelper.getNotebooks(mEvernoteSession);
 
 
-                        NoteFilter filter = new NoteFilter();
-                        filter.setNotebookGuid(notebooks.get(1).getGuid());
 
-                        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
-                        spec.setIncludeTitle(true);
-                        try {
-                            mEvernoteSession.getClientFactory().createNoteStoreClient().findNotesMetadata(filter, 0, 10, spec, new OnClientCallback<NotesMetadataList>() {
-                                @Override
-                                public void onSuccess(NotesMetadataList data) {
+        // end test
 
-                                    NotesMetadataList b = data;
-                                    int a =5;
-                                }
-
-                                @Override
-                                public void onException(Exception exception) {
-                                    Log.e(LOGTAG, "Error retrieving notes", exception);
-                                }
-                            });
-                        } catch (TTransportException exception) {
-                            Log.e(LOGTAG, "Error retrieving notes", exception);
-                        }
-
-
-                        for (Notebook notebook : notebooks) {
-                            namesList.add(notebook.getName());
-                        }
-
-                        String notebookNames = TextUtils.join(", ", namesList);
-                        Toast.makeText(getApplicationContext(), notebookNames + " notebooks have been retrieved", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onException(Exception exception) {
-                        Log.e(LOGTAG, "Error retrieving notebooks", exception);
-                    }
-                });
-            }
-        } catch (TTransportException e) {
-            e.getMessage();
-        }
-
-        // --end check rest method
 
         FAB = (ImageButton) findViewById(R.id.imageButton);
         FAB.setOnClickListener(new View.OnClickListener() {
@@ -156,9 +153,24 @@ public class MainActivity extends SessionHolder {
         return slideMenuItems;
     }
 
-    public void displayView(int position) {
+    private void displayView(int position) {
         setTitle(slideMenuTitles[position]);
         drawerLayout.closeDrawer(slideMenu);
+
+        // update the main content by replacing fragments
+        Fragment fragment = null;
+        switch (position) {
+            case 0:
+                fragment = new NotesFragment();
+                break;
+            default:
+                break;
+        }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        }
     }
 
     /***
@@ -176,13 +188,6 @@ public class MainActivity extends SessionHolder {
     public void setTitle(CharSequence title) {
         appTitle = title;
         getSupportActionBar().setTitle(appTitle);
-    }
-
-    private class SlideMenuClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            displayView(position);
-        }
     }
 
     /**
@@ -225,6 +230,36 @@ public class MainActivity extends SessionHolder {
             }
             return true;
         }
+        else if (id == R.id.action_add_notebook) {
+            createNotebook();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createNotebook() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final EditText edittext= new EditText(MainActivity.this);
+        builder.setMessage("Новый блокнот");
+        builder.setTitle("Введите название");
+
+        builder.setView(edittext);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String notebookName = edittext.getText().toString();
+                Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+
     }
 }

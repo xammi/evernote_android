@@ -51,9 +51,20 @@
 
         <provider
             android:name=".provider.EvernoteContentProvider"
+            android:authorities="com.company.evernote_android.provider"
+            android:exported="false"
+            />
+
             android:authorities="tp.evernote.provider.notes" />
 
+        <service android:name=".sync.EvernoteService" />
 
+
+        <service
+            android:name=".provider.DBWriteService"
+            android:enabled="true"
+            android:exported="false"
+            />
 
     </application>
 

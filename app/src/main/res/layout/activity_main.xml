@@ -46,7 +46,7 @@
             android:choiceMode="singleChoice"
             android:divider="#111"
             android:dividerHeight="1dp"
-            android:listSelector="@layout/list_selector"
+            android:listSelector="@layout/slide_menu_selector"
             android:background="@color/background_drawer"/>
 
     </android.support.v4.widget.DrawerLayout>
