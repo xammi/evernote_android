@@ -80,6 +80,7 @@ public class MainActivity extends ActionBarActivity {
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (position == 1) return;
             displayView(position);
         }
     }

@@ -43,13 +43,21 @@ public class DBService extends Service implements ClientAPI {
                 Notebooks.ALL_COLUMNS_PROJECTION,
                 NOT_DELETED_SELECTION,
                 null,
-                null);
+                Notes.UPDATED + " DESC");
         return cursor;
     }
 
     @Override
     public Cursor getNotesFor(long notebookId) {
-        return null;
+        String selection = Notes.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal()
+                + " AND " + Notes.NOTEBOOKS_ID + "=" + ((Long) notebookId).toString();
+        Cursor cursor = getContentResolver().query(
+                Notebooks.CONTENT_URI,
+                Notebooks.ALL_COLUMNS_PROJECTION,
+                selection,
+                null,
+                Notes.UPDATED + " DESC");
+        return cursor;
     }
 
     @Override
@@ -71,6 +79,7 @@ public class DBService extends Service implements ClientAPI {
             note.setContent(cursor.getString(cursor.getColumnIndexOrThrow(Notes.CONTENT)));
             note.setCreated(cursor.getLong(cursor.getColumnIndexOrThrow(Notes.CREATED)));
             note.setUpdated(cursor.getLong(cursor.getColumnIndexOrThrow(Notes.UPDATED)));
+            note.setDeleted(cursor.getLong(cursor.getColumnIndexOrThrow(Notes._ID))); // feature
             cursor.close();
             return note;
         }
@@ -90,14 +99,14 @@ public class DBService extends Service implements ClientAPI {
     }
 
     @Override
-    public boolean insertNote(String title, String content, long notebooksId) {
+    public boolean insertNote(String title, String content, long notebookId) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notes.TITLE, title);
         contentValues.put(Notes.CONTENT, content);
         contentValues.put(Notes.CREATED, currentTime);
         contentValues.put(Notes.UPDATED, currentTime);
-        contentValues.put(Notes.NOTEBOOKS_ID, notebooksId);
+        contentValues.put(Notes.NOTEBOOKS_ID, notebookId);
         contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
         contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
         Uri result = getContentResolver().insert(Notes.CONTENT_URI, contentValues);
@@ -105,42 +114,43 @@ public class DBService extends Service implements ClientAPI {
     }
 
     @Override
-    public boolean updateNotebook(long notebooksId, String name) {
+    public boolean updateNotebook(long notebookId, String name) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notebooks.NAME, name);
         contentValues.put(Notebooks.UPDATED, currentTime);
         contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
 
-        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebooksId).toString();
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebookId).toString();
         int result = getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
-    public boolean updateNote(String title, String content, long notesId) {
+    public boolean updateNote(long noteId, String title, String content, long notebookId) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notes.TITLE, title);
         contentValues.put(Notes.CONTENT, content);
         contentValues.put(Notes.UPDATED, currentTime);
+        contentValues.put(Notes.NOTEBOOKS_ID, notebookId);
         contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
 
-        String WHERE_ID = Notebooks._ID + "=" + ((Long) notesId).toString();
+        String WHERE_ID = Notes._ID + "=" + ((Long) noteId).toString();
         int result = getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
-    public boolean deleteNotebook(long notebooksId) {
-        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebooksId).toString();
+    public boolean deleteNotebook(long notebookId) {
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebookId).toString();
         int result = getContentResolver().delete(Notebooks.CONTENT_URI, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
-    public boolean deleteNote(long notesId) {
-        String WHERE_ID = Notebooks._ID + "=" + ((Long) notesId).toString();
+    public boolean deleteNote(long noteId) {
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) noteId).toString();
         int result = getContentResolver().delete(Notes.CONTENT_URI, WHERE_ID, null);
         return result != 0;
     }

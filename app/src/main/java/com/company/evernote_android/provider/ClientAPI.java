@@ -13,9 +13,9 @@ public interface ClientAPI {
     Note getNote(long noteId);
 
     boolean insertNotebook(String name);
-    boolean insertNote(String title, String content, long notebooksId);
-    boolean updateNotebook(long notebooksId, String name);
-    boolean updateNote(String title, String content, long notesId);
-    boolean deleteNote(long notesId);
-    boolean deleteNotebook(long notebooksId);
+    boolean insertNote(String title, String content, long notebookId);
+    boolean updateNotebook(long notebookId, String name);
+    boolean updateNote(long noteId, String title, String content, long notebookId);
+    boolean deleteNote(long noteId);
+    boolean deleteNotebook(long notebookId);
 }

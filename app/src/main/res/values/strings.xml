@@ -9,6 +9,7 @@
     <string name="title_activity_read_note">Детали заметки</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="title_activity_edit_note">Изменение</string>
 
     <string name="menu">Меню</string>
     <string name="menu_sort">Сортировка…</string>
@@ -50,6 +51,7 @@
     <string name="msg_retrieved_resource">Ресурсы получены</string>
     <string name="esdk__loading">Загрузка...</string>
     <string name="note_saved">Заметка сохранена</string>
+    <string name="note_updated">Заметка обновлена</string>
     <string name="notes_searched">Поиск заметок завершен</string>
     <string name="ok">Ok</string>
     <string name="search_hint">Искать</string>
@@ -66,6 +68,7 @@
     <string name="error_listing_notes">Ошибка отображения списка заметок</string>
     <string name="error_create_notebook">Ошибка создания блокнота</string>
     <string name="error_deleting_note">Ошибка удаления заметки</string>
+    <string name="error_updating_note">Ошибка обновления заметки</string>
 
     <string name="CANNOT_GET_LINKED_NOTEBOOK">Cannot get linked notebook</string>
     <string name="CANT_LIST_APP_LNB">Can\'t select notebook: account can only access one linked notebook</string>

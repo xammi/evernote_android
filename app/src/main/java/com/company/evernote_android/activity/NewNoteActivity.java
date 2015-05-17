@@ -31,11 +31,11 @@ import com.evernote.edam.type.Note;
 public class NewNoteActivity extends ActionBarActivity {
     private static final String LOGTAG = "NewNoteActivity";
 
-    private EditText mEditTextTitle;
-    private EditText mEditTextContent;
+    protected EditText mEditTextTitle;
+    protected EditText mEditTextContent;
 
-    private ClientAPI mService = null;
-    private int mSelectedNotebook = 0;
+    protected ClientAPI mService = null;
+    protected long mSelectedNotebook = 1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,21 +117,28 @@ public class NewNoteActivity extends ActionBarActivity {
 
     public void selectNotebook(View view) {
         Cursor cursor = mService.getAllNotebooks();
+        int nameIndex = cursor.getColumnIndexOrThrow(Notebooks.NAME);
+        int idIndex = cursor.getColumnIndexOrThrow(Notebooks._ID);
 
         if (cursor != null) {
             CharSequence[] names = new CharSequence[cursor.getCount()];
+            final Long [] ids = new Long [cursor.getCount()];
+
             int I = 0;
-            int nameIndex = cursor.getColumnIndexOrThrow(Notebooks.NAME);
             while (cursor.moveToNext()) {
-                names[I++] = cursor.getString(nameIndex);
+                names[I] = cursor.getString(nameIndex);
+                ids[I] = cursor.getLong(idIndex);
+                I++;
             }
+            int alreadySelected = EditNoteActivity.find(ids, mSelectedNotebook);
+            if (alreadySelected == -1)
+                alreadySelected = 1;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(NewNoteActivity.this);
-
-            builder.setSingleChoiceItems(names, mSelectedNotebook, new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(names, alreadySelected, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mSelectedNotebook = which;
+                            mSelectedNotebook = ids[which];
                         }
                     });
 
@@ -150,21 +157,27 @@ public class NewNoteActivity extends ActionBarActivity {
         }
     }
 
+    public static <T> int find(T [] array, T item) {
+        if (item == null) return -1;
+
+        for (int I = 0; I < array.length; I++) {
+            if (item.equals(array[I])) {
+                return I;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_new_note, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-//        //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
             saveNote(null);
             return true;

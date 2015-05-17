@@ -28,6 +28,7 @@ public class ReadNoteActivity extends ActionBarActivity {
     private static final String LOGTAG = "ReadNoteActivity";
 
     private long noteId;
+    private Note mNote = null;
     private ClientAPI mService;
 
     @Override
@@ -86,17 +87,17 @@ public class ReadNoteActivity extends ActionBarActivity {
     }
 
     private void inflateNote() {
-        Note note = mService.getNote(noteId);
+        mNote = mService.getNote(noteId);
 
-        if (note != null) {
+        if (mNote != null) {
             TextView title = (TextView) findViewById(R.id.title);
-            title.setText(note.getTitle());
+            title.setText(mNote.getTitle());
 
             TextView content = (TextView) findViewById(R.id.content);
-            content.setText(note.getContent());
+            content.setText(mNote.getContent());
 
             TextView date = (TextView) findViewById(R.id.date);
-            date.setText(new Date(note.getUpdated()).toString());
+            date.setText(new Date(mNote.getUpdated()).toString());
         }
         else {
             Toast.makeText(ReadNoteActivity.this, R.string.err_retrieving_resource, Toast.LENGTH_SHORT).show();
@@ -115,16 +116,12 @@ public class ReadNoteActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_read_note, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == R.id.action_discard) {
@@ -132,7 +129,9 @@ public class ReadNoteActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.action_edit) {
-            // TODO: Editing of note
+            Intent intent = new Intent(ReadNoteActivity.this, EditNoteActivity.class);
+            intent.putExtra(NotesFragment.NOTE_ID_KEY, noteId);
+            startActivity(intent);
             return true;
         }
 
