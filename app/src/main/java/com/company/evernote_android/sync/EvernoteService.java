@@ -11,6 +11,9 @@ import com.company.evernote_android.sync.processor.NotebookProcessor;
 import com.company.evernote_android.sync.processor.ProcessorCallback;
 import com.evernote.client.android.EvernoteSession;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Zalman on 12.04.2015.
  */
@@ -22,7 +25,7 @@ public class EvernoteService extends IntentService {
     public static final String TYPE_GET_NOTES = "GET_NOTES";
     public static final String TYPE_GET_NOTEBOOKS = "GET_NOTEBOOKS";
 
-    private Intent requestIntent;
+    private Map<String, Intent> requestIntent = new HashMap<>();
     private ResultReceiver requestCallback;
 
     public EvernoteService() {
@@ -32,10 +35,11 @@ public class EvernoteService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        requestIntent = intent;
 
-        String requestType = requestIntent.getStringExtra(ACTION_TYPE);
-        requestCallback = requestIntent.getParcelableExtra(REQUEST_CALLBACK);
+
+        String requestType = intent.getStringExtra(ACTION_TYPE);
+        requestCallback = intent.getParcelableExtra(REQUEST_CALLBACK);
+        requestIntent.put(requestType, intent);
 
 
         EvernoteSession mEvernoteSession = EvernoteSession.getInstance(this,
@@ -51,10 +55,9 @@ public class EvernoteService extends IntentService {
                 notebookProcessor.getNotebooks(makeNoteProcessorCallback(), mEvernoteSession);
                 break;
             case TYPE_GET_NOTES:
-                String guid = requestIntent.getStringExtra("guid");
-                int maxNotes = requestIntent.getIntExtra("maxNotes", 0);
+                int maxNotes = intent.getIntExtra("maxNotes", 0);
                 NoteProcessor noteProcessor = new NoteProcessor(getApplicationContext());
-                noteProcessor.getNotes(makeNoteProcessorCallback(), mEvernoteSession, guid, maxNotes);
+                noteProcessor.getNotes(makeNoteProcessorCallback(), mEvernoteSession, maxNotes);
                 break;
         }
 
@@ -63,18 +66,18 @@ public class EvernoteService extends IntentService {
     private ProcessorCallback makeNoteProcessorCallback() {
         ProcessorCallback callback = new ProcessorCallback() {
             @Override
-            public void send(int resultCode) {
+            public void send(int resultCode, String requestType) {
                 if (requestCallback != null) {
-                    requestCallback.send(resultCode, getRequestIntentBundle());
+                    requestCallback.send(resultCode, getRequestIntentBundle(requestType));
                 }
             }
         };
         return callback;
     }
 
-    private Bundle getRequestIntentBundle() {
+    private Bundle getRequestIntentBundle(String requestType) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(INTENT_IDENTIFIER, requestIntent);
+        bundle.putParcelable(INTENT_IDENTIFIER, requestIntent.get(requestType));
         return bundle;
     }
 

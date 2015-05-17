@@ -2,6 +2,7 @@ package com.company.evernote_android.sync.processor;
 
 import android.content.Context;
 
+import com.company.evernote_android.sync.EvernoteService;
 import com.company.evernote_android.sync.rest.GetNotebooksCallback;
 import com.company.evernote_android.sync.rest.GetNotebooksRestMethod;
 import com.company.evernote_android.utils.StatusCode;
@@ -40,7 +41,7 @@ public class NotebookProcessor {
 
                 }
 
-                processorCallback.send(statusCode);
+                processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTEBOOKS);
 
             }
         };

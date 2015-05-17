@@ -5,6 +5,6 @@ package com.company.evernote_android.sync.processor;
  */
 public interface ProcessorCallback {
 
-    void send(int resultCode);
+    void send(int resultCode, String requestType);
 
 }

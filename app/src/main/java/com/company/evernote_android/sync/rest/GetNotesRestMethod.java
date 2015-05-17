@@ -14,6 +14,7 @@ import com.evernote.edam.type.Notebook;
 import com.evernote.thrift.transport.TTransportException;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -24,11 +25,16 @@ public class GetNotesRestMethod {
     private static String LOGTAG = "GetNotesRestMethod: ";
     private static AtomicInteger counterEnd = new AtomicInteger(0);
     private static AtomicInteger counterNotes = new AtomicInteger(0);
+    private static GetNotesCallback getNotebooksCallback;
+    private static EvernoteSession mEvernoteSession;
+    private static ConcurrentLinkedQueue<Note> resultNotes = new ConcurrentLinkedQueue<>();
 
     public GetNotesRestMethod() {
     }
 
-    public static void execute(final GetNotesCallback callback, final EvernoteSession mEvernoteSession, final String guid, final int maxNotes) {
+    public static void execute(final GetNotesCallback callback, final EvernoteSession evernoteSession, final int maxNotes) {
+        getNotebooksCallback = callback;
+        mEvernoteSession = evernoteSession;
 
         if (mEvernoteSession.isLoggedIn()) {
 
@@ -37,57 +43,10 @@ public class GetNotesRestMethod {
                     @Override
                     public void onSuccess(final List<Notebook> notebooks) {
 
-
                         for (Notebook notebook : notebooks) {
-                            NoteFilter filter = new NoteFilter();
-                            filter.setNotebookGuid(notebook.getGuid());
-
-                            NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
-                            spec.setIncludeTitle(true);
-                            try {
-                                mEvernoteSession.getClientFactory().createNoteStoreClient().findNotesMetadata(filter, 0, maxNotes, spec, new OnClientCallback<NotesMetadataList>() {
-                                    @Override
-                                    public void onSuccess(NotesMetadataList data) {
-
-                                        List<NoteMetadata> mNotes = data.getNotes();
-
-                                        counterNotes.addAndGet(mNotes.size());
-                                        for (final NoteMetadata mNote : mNotes) {
-                                            try {
-                                                mEvernoteSession.getClientFactory().createNoteStoreClient().getNote(mNote.getGuid(), true, true, true, true, new OnClientCallback<Note>() {
-                                                    @Override
-                                                    public void onSuccess(Note data) {
-                                                        counterEnd.getAndAdd(1);
-                                                        Log.e(mNote.getGuid(), data.getTitle());
-                                                        if (counterNotes.get() == counterEnd.get()) {
-                                                            Log.e("send", "ok");
-                                                        }
-
-                                                    }
-                                                    @Override
-                                                    public void onException(Exception exception) {
-                                                        counterEnd.getAndAdd(1);
-                                                        Log.e(LOGTAG, "getNote exception:", exception);
-                                                        if (counterNotes.get() == counterEnd.get()) {
-                                                            Log.e("send", "error");
-                                                        }
-
-                                                    }
-                                                });
-                                            } catch (TTransportException exception) {
-                                                Log.e(LOGTAG, "getNote exception:", exception);
-                                            }
-                                        }
-                                    }
-                                    @Override
-                                    public void onException(Exception exception) {
-                                        Log.e(LOGTAG, "getNotebook exception:", exception);
-                                    }
-                                });
-                            } catch (TTransportException exception) {
-                                Log.e(LOGTAG, "getNotebook exception:", exception);
-                            }
+                            getNotesMetadata(notebook, maxNotes);
                         }
+                        
                     }
                     @Override
                     public void onException(Exception exception) {
@@ -98,7 +57,62 @@ public class GetNotesRestMethod {
                 Log.e(LOGTAG, "getNotesMetadataList exception:", exception);
             }
         }
-        Log.e("test", "ok");
+    }
+
+    private static void getNotesMetadata(Notebook notebook, int maxNotes) {
+        NoteFilter filter = new NoteFilter();
+        filter.setNotebookGuid(notebook.getGuid());
+
+        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
+        spec.setIncludeTitle(true);
+        try {
+            mEvernoteSession.getClientFactory().createNoteStoreClient().findNotesMetadata(filter, 0, maxNotes, spec, new OnClientCallback<NotesMetadataList>() {
+                @Override
+                public void onSuccess(NotesMetadataList data) {
+
+                    List<NoteMetadata> mNotes = data.getNotes();
+
+                    counterNotes.addAndGet(mNotes.size());
+                    for (final NoteMetadata mNote : mNotes) {
+                        getNotes(mNote);
+                    }
+                }
+                @Override
+                public void onException(Exception exception) {
+                    Log.e(LOGTAG, "getNotebook exception:", exception);
+                }
+            });
+        } catch (TTransportException exception) {
+            Log.e(LOGTAG, "getNotebook exception:", exception);
+        }
+    }
+
+    private static void getNotes(final NoteMetadata mNote) {
+        try {
+            mEvernoteSession.getClientFactory().createNoteStoreClient().getNote(mNote.getGuid(), true, true, true, true, new OnClientCallback<Note>() {
+                @Override
+                public void onSuccess(Note data) {
+                    counterEnd.getAndAdd(1);
+                    resultNotes.add(data);
+                    Log.e(mNote.getGuid(), data.getTitle());
+                    if (counterNotes.get() == counterEnd.get()) {
+                        getNotebooksCallback.sendNotes(resultNotes, StatusCode.OK);
+                    }
+
+                }
+                @Override
+                public void onException(Exception exception) {
+                    counterEnd.getAndAdd(1);
+                    Log.e(LOGTAG, "getNote exception:", exception);
+                    if (counterNotes.get() == counterEnd.get()) {
+                        getNotebooksCallback.sendNotes(null, StatusCode.ERROR);
+                    }
+
+                }
+            });
+        } catch (TTransportException exception) {
+            Log.e(LOGTAG, "getNote exception:", exception);
+        }
     }
 
 }

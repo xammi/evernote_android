@@ -35,8 +35,10 @@ import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
+
 import com.company.evernote_android.activity.main.fragments.NotImplemented;
 import com.company.evernote_android.activity.main.fragments.NotebookFragment;
+
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
 import static com.company.evernote_android.provider.EvernoteContract.*;
@@ -69,11 +71,11 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<SlideMenuItem> slideMenuItems = null;
 
     private EvernoteServiceHelper evernoteServiceHelper;
+    private long notebooksRequestId;
+    private long notesRequestId;
     private ClientAPI mService = null;
 
     private BroadcastReceiver broadcastReceiver;
-    private long requestId;
-
 
     ImageButton FAB;
 
@@ -99,9 +101,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setLogo(R.drawable.ic_app_logo);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
 
-        //start test
-        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
-        requestId = evernoteServiceHelper.getNotebooks();
+        syncNotebooksAndNotes();
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -109,25 +109,32 @@ public class MainActivity extends ActionBarActivity {
 
                 long resulRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
 
-                if (requestId == resulRequestId) {
-
+                if (notebooksRequestId == resulRequestId) {
+                    String message;
                     if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
-                        Toast toast = Toast.makeText(context, "SUCCESS", Toast.LENGTH_SHORT);
-                        toast.show();
+                        message = "Notebook update success";
+                    } else {
+                        message = "Notebook update error";
                     }
 
+                    Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+                if (notesRequestId == resulRequestId) {
+                    String message;
+                    if (intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0) == StatusCode.OK) {
+                       message = "Notes update success";
+                    } else {
+                        message = "Notes update error";
+                    }
+
+                    Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+                    toast.show();
                 }
 
             }
         };
-
-        requestId = evernoteServiceHelper.getNotesByNotebookGuid("a028ef40-837e-467a-b38a-fd8fcb9b4add", 10);
-
-        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
-        registerReceiver(broadcastReceiver, filter);
-
-        // end test
-
 
         FAB = (ImageButton) findViewById(R.id.imageButton);
         FAB.setOnClickListener(new View.OnClickListener() {
@@ -258,6 +265,11 @@ public class MainActivity extends ActionBarActivity {
         else if (id == R.id.action_add_notebook) {
             createNotebook();
         }
+        else if (id == R.id.action_sync) {
+            IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+            registerReceiver(broadcastReceiver, filter);
+            syncNotebooksAndNotes();
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -353,5 +365,11 @@ public class MainActivity extends ActionBarActivity {
 
         builder.show();
 
+    }
+
+    private void syncNotebooksAndNotes() {
+        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
+        notebooksRequestId = evernoteServiceHelper.getNotebooks();
+        notesRequestId = evernoteServiceHelper.getAllNotes(100);
     }
 }
