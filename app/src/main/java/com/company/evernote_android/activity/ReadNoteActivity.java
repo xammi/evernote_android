@@ -22,6 +22,7 @@ import com.company.evernote_android.provider.DBService;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -98,13 +99,13 @@ public class ReadNoteActivity extends ActionBarActivity {
             contentView.setText(mNote.getContent());
 
             TextView dateView = (TextView) findViewById(R.id.date);
-            dateView.setText(new Date(mNote.getUpdated()).toString());
+            dateView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(mNote.getUpdated())).toString());
 
             Notebook notebook = mService.getNotebook(mNote.getDeleted()); // feature
             TextView notebookView = (TextView) findViewById(R.id.notebook);
 
             if (notebook != null) {
-                notebookView.setText(notebookView.getText().toString() + notebook.getName());
+                notebookView.setText(notebookView.getText().toString() + " " + notebook.getName());
             }
             else {
                 notebookView.setText("Без блокнота");

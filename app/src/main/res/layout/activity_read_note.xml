@@ -32,7 +32,7 @@
             android:textColor="@color/green"
             android:gravity="center_vertical"
             android:textSize="24sp"
-            android:padding="15dp"
+            android:paddingLeft="15dp"
             />
 
         <TextView android:id="@+id/notebook"
@@ -41,7 +41,7 @@
             android:gravity="top"
             android:textSize="@dimen/note_content"
             android:textColor="@color/green"
-            android:padding="15dp"
+            android:paddingLeft="15dp"
             android:text="Блокнот:"
             />
 

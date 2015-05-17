@@ -59,7 +59,7 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
             TextView date = (TextView) view.findViewById(R.id.date);
             int dateIndex = cursor.getColumnIndexOrThrow(Notes.UPDATED);
             String dateString = cursor.getString(dateIndex);
-            date.setText(new SimpleDateFormat("dd-MM-yyyy").format(new Date(Long.parseLong(dateString))).toString());
+            date.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(Long.parseLong(dateString))).toString());
         }
     }
 
