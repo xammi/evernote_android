@@ -24,7 +24,8 @@ public final class EvernoteContract {
         public static final String TABLE_NAME = "notebooks";
         public static final String NAME = "name";
 
-        public static final String[] ALL_COLUMNS_PROJECTION = {_ID, NAME, GUID, CREATED, UPDATED, USN, STATE_DELETED, STATE_SYNC_REQUIRED};
+        public static final String[] ALL_COLUMNS_PROJECTION = {_ID, NAME, GUID, CREATED, UPDATED,
+                USN, STATE_DELETED, STATE_SYNC_REQUIRED};
 
         static final String SQL_CREATE = "CREATE TABLE " + TABLE_NAME + " ( " +
                 _ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + "," +
@@ -48,12 +49,15 @@ public final class EvernoteContract {
         public static final String TITLE = "title";
         public static final String CONTENT = "content";
         public static final String NOTEBOOKS_ID = "notebooks_id";
+        public static final String NOTEBOOKS_GUID = "notebooks_guid";
 
-        public static final String[] ALL_COLUMNS_PROJECTION = {_ID, TITLE, CONTENT, GUID, CREATED, UPDATED, USN, STATE_DELETED, STATE_SYNC_REQUIRED, NOTEBOOKS_ID};
+        public static final String[] ALL_COLUMNS_PROJECTION = {_ID, TITLE, CONTENT, GUID, CREATED,
+                UPDATED, USN, STATE_DELETED, STATE_SYNC_REQUIRED, NOTEBOOKS_ID, NOTEBOOKS_GUID};
 
         static final String SQL_CREATE = "CREATE TABLE " + TABLE_NAME + "(" +
                 _ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + "," +
                 TITLE + " TEXT NOT NULL" + "," +
+                NOTEBOOKS_GUID + " TEXT NOT NULL" + "," +
                 CONTENT + " TEXT" + "," +
                 GUID + " TEXT UNIQUE" + "," +
                 CREATED + " INTEGER NOT NULL" + "," +

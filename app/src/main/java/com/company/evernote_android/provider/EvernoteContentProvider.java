@@ -5,9 +5,13 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.provider.ContactsContract;
+
+import com.evernote.edam.type.Notebook;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
@@ -80,13 +84,39 @@ public class EvernoteContentProvider extends ContentProvider {
         return cursor;
     }
 
+    private Long getNotebookByGUID(String GUID) {
+        String WHERE_ID = Notebooks.GUID + "='" + GUID + "'";
+        Cursor cursor = query(Notebooks.CONTENT_URI, new String[]{Notebooks._ID}, WHERE_ID, null, null);
+        if (cursor == null || cursor.getCount() == 0)
+            return null;
+        else {
+            cursor.moveToNext();
+            return cursor.getLong(cursor.getColumnIndexOrThrow(Notebooks._ID));
+        }
+    }
+
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        String tableName = getTableName(uri);
+
+        if (values.containsKey(Notes.NOTEBOOKS_GUID) && !values.containsKey(Notes.NOTEBOOKS_ID)) {
+            Long notebookId = getNotebookByGUID(values.getAsString(Notes.NOTEBOOKS_GUID));
+            values.put(Notes.NOTEBOOKS_ID, notebookId);
+        }
 
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
-        long id = dbConnection.insertOrThrow(getTableName(uri), null, values);
-        Uri result = ContentUris.withAppendedId(getContentUri(uri), id);
-
+        Uri result;
+        try {
+            long id = dbConnection.insertOrThrow(tableName, null, values);
+            result = ContentUris.withAppendedId(getContentUri(uri), id);
+            return result;
+        }
+        catch (SQLException e) {
+            String WHERE_ID = General.GUID + "='" + values.getAsString(General.GUID) + "'";
+            int updated = dbConnection.update(tableName, values, WHERE_ID, null);
+            // TODO: not much time to implement all staff
+            result = ContentUris.withAppendedId(getContentUri(uri), 0);
+        }
         return result;
     }
 
