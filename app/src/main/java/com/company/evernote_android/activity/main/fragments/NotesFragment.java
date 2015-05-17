@@ -3,6 +3,7 @@ package com.company.evernote_android.activity.main.fragments;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -12,9 +13,12 @@ import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.ReadNoteActivity;
+
+import java.util.Date;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
@@ -22,11 +26,28 @@ import static com.company.evernote_android.provider.EvernoteContract.*;
 public class NotesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private CursorAdapter mAdapter;
 
-    private final String[] from = new String[]{Notes.TITLE, Notes.CONTENT};
-    private final int[] to = new int[]{R.id.title, R.id.content};
+    private final String[] from = new String[] {Notes.TITLE, Notes.CONTENT, Notes.UPDATED};
+    private final int[] to = new int[] {R.id.title, R.id.content, R.id.date};
 
     public NotesFragment() {
         // Required empty public constructor
+    }
+
+    class CustomAdapter extends SimpleCursorAdapter {
+
+        public CustomAdapter(Context context, int layout, Cursor c, String[] from,
+                                   int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+            TextView date = (TextView) view.findViewById(R.id.date);
+            int dateIndex = cursor.getColumnIndexOrThrow(Notes.UPDATED);
+            String dateString = cursor.getString(dateIndex);
+            date.setText(new Date(Long.parseLong(dateString)).toString());
+        }
     }
 
     @Override
@@ -34,7 +55,7 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
 
-        mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.note_item, null, from, to, 0);
+        mAdapter = new CustomAdapter(getActivity(), R.layout.note_item, null, from, to, 0);
         setListAdapter(mAdapter);
     }
 
@@ -54,13 +75,12 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
                 Notes.ALL_COLUMNS_PROJECTION,
                 Notebooks.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal(),
                 null,
-                null);
+                Notes.UPDATED);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mAdapter.swapCursor(cursor);
-
     }
 
     @Override

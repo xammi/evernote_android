@@ -223,6 +223,7 @@ public class MainActivity extends ActionBarActivity {
             try {
                 EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(MainActivity.this);
                 mEvernoteSession.logOut(MainActivity.this);
+                finish();
             }
             catch (InvalidAuthenticationException e) {
                 Log.e(LOGTAG, e.getMessage());
