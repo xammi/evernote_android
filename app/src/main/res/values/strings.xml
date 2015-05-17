@@ -64,6 +64,7 @@
     <string name="error_saving_note">Ошибка сохранения заметки</string>
     <string name="error_listing_notes">Ошибка отображения списка заметок</string>
     <string name="error_create_notebook">Ошибка создания блокнота</string>
+    <string name="error_deleting_note">Ошибка удаления заметки</string>
 
     <string name="CANNOT_GET_LINKED_NOTEBOOK">Cannot get linked notebook</string>
     <string name="CANT_LIST_APP_LNB">Can\'t select notebook: account can only access one linked notebook</string>

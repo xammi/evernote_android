@@ -103,6 +103,16 @@ public class ReadNoteActivity extends ActionBarActivity {
         }
     }
 
+    private void deleteNote() {
+        boolean deleted = mService.deleteNote(noteId);
+        if (deleted) {
+            finish();
+        }
+        else {
+            Toast.makeText(ReadNoteActivity.this, R.string.error_deleting_note, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -117,10 +127,14 @@ public class ReadNoteActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
+        if (id == R.id.action_discard) {
+            deleteNote();
+            return true;
+        }
+        else if (id == R.id.action_edit) {
+            // TODO: Editing of note
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

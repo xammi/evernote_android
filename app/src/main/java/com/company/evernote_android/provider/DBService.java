@@ -111,36 +111,37 @@ public class DBService extends Service implements ClientAPI {
         contentValues.put(Notebooks.NAME, name);
         contentValues.put(Notebooks.UPDATED, currentTime);
         contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
-        Uri notebookUri = ContentUris.withAppendedId(Notebooks.CONTENT_URI, notebooksId);
-        int result = getContentResolver().update(notebookUri, contentValues, null, null);
+
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebooksId).toString();
+        int result = getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
-    public boolean updateNote(String title, String content, long notebooksId) {
+    public boolean updateNote(String title, String content, long notesId) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notes.TITLE, title);
         contentValues.put(Notes.CONTENT, content);
         contentValues.put(Notes.UPDATED, currentTime);
         contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
-        Uri notesUri = ContentUris.withAppendedId(Notes.CONTENT_URI, notebooksId);
-        int result = getContentResolver().update(notesUri, contentValues, null, null);
+
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notesId).toString();
+        int result = getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 
-
     @Override
     public boolean deleteNotebook(long notebooksId) {
-        Uri notebookUri = ContentUris.withAppendedId(Notebooks.CONTENT_URI, notebooksId);
-        int result = getContentResolver().delete(notebookUri, null, null);
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebooksId).toString();
+        int result = getContentResolver().delete(Notebooks.CONTENT_URI, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
     public boolean deleteNote(long notesId) {
-        Uri notesUri = ContentUris.withAppendedId(Notebooks.CONTENT_URI, notesId);
-        int result = getContentResolver().delete(notesUri, null, null);
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notesId).toString();
+        int result = getContentResolver().delete(Notes.CONTENT_URI, WHERE_ID, null);
         return result != 0;
     }
 }

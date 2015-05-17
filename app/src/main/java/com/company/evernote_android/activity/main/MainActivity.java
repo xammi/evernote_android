@@ -190,6 +190,12 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        displayView(0);
+        super.onResume();
+    }
+
     /***
      * Called when invalidateOptionsMenu() is triggered
      */

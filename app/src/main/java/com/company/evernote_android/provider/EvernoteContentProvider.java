@@ -94,7 +94,6 @@ public class EvernoteContentProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
         int deleted = dbConnection.delete(getTableName(uri), selection, selectionArgs);
-
         return deleted;
     }
 
@@ -103,12 +102,7 @@ public class EvernoteContentProvider extends ContentProvider {
                       String[] selectionArgs)
     {
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
-
-        long id = Long.parseLong(uri.getLastPathSegment());
-        selection = Notebooks._ID + "=" + id;
         int updated = dbConnection.update(getTableName(uri), values, selection, null);
-        Uri result = ContentUris.withAppendedId(getContentUri(uri), id);
-
         return updated;
     }
 }

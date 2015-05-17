@@ -66,7 +66,6 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
-
         mAdapter = new CustomAdapter(getActivity(), R.layout.note_item, null, from, to, 0);
         setListAdapter(mAdapter);
     }
