@@ -19,9 +19,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class NoteProcessor {
 
     private ProcessorCallback processorCallback;
+    private Context context;
 
-    public NoteProcessor(ProcessorCallback callback) {
+    public NoteProcessor(Context context, ProcessorCallback callback) {
         this.processorCallback = callback;
+        this.context = context;
     }
 
     public void  getNotes(EvernoteSession session, int maxNotes) {

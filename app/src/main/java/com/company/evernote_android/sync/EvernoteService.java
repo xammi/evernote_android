@@ -47,17 +47,17 @@ public class EvernoteService extends IntentService {
         switch (requestType) {
 
             case TYPE_GET_NOTEBOOKS:
-                notebookProcessor = new NotebookProcessor(makeProcessorCallback());
+                notebookProcessor = new NotebookProcessor(getApplicationContext(), makeProcessorCallback());
                 notebookProcessor.getNotebooks(mEvernoteSession);
                 break;
             case TYPE_GET_NOTES:
                 int maxNotes = intent.getIntExtra("maxNotes", 0);
-                NoteProcessor noteProcessor = new NoteProcessor(makeProcessorCallback());
+                NoteProcessor noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
                 noteProcessor.getNotes(mEvernoteSession, maxNotes);
                 break;
             case TYPE_SAVE_NOTEBOOK:
                 String notebookName = intent.getStringExtra("notebookName");
-                notebookProcessor = new NotebookProcessor(makeProcessorCallback());
+                notebookProcessor = new NotebookProcessor(getApplicationContext(), makeProcessorCallback());
                 notebookProcessor.saveNotebook(mEvernoteSession, notebookName);
 
         }

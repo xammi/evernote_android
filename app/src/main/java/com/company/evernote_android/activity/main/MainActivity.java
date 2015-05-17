@@ -105,8 +105,6 @@ public class MainActivity extends ActionBarActivity {
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
         syncNotebooksAndNotes();
 
-
-
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

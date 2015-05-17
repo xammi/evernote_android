@@ -22,9 +22,11 @@ import java.util.List;
 public class NotebookProcessor {
 
     private ProcessorCallback processorCallback;
+    private Context context;
 
-    public NotebookProcessor(ProcessorCallback callback) {
+    public NotebookProcessor(Context context, ProcessorCallback callback) {
         this.processorCallback = callback;
+        this.context = context;
     }
 
     public void  getNotebooks(EvernoteSession session) {
