@@ -3,6 +3,7 @@ package com.company.evernote_android.provider;
 import android.database.Cursor;
 
 import com.evernote.edam.type.Note;
+import com.evernote.edam.type.Notebook;
 
 /**
  * Created by max on 09.05.15.
@@ -10,6 +11,8 @@ import com.evernote.edam.type.Note;
 public interface ClientAPI {
     Cursor getAllNotebooks();
     Cursor getNotesFor(long notebookId);
+
+    Notebook getNotebook(long notebookId);
     Note getNote(long noteId);
 
     boolean insertNotebook(String name);

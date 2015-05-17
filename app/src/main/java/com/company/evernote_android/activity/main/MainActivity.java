@@ -160,12 +160,6 @@ public class MainActivity extends ActionBarActivity {
         drawerLayout.setDrawerListener(drawerToggle);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
-    }
-
     private void displayView(int position) {
         setTitle(slideMenuTitles.get(position));
         drawerLayout.closeDrawer(slideMenu);

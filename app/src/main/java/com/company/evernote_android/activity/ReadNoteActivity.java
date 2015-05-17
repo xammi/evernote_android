@@ -20,6 +20,7 @@ import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
 import com.evernote.edam.type.Note;
+import com.evernote.edam.type.Notebook;
 
 import java.util.Date;
 
@@ -90,14 +91,24 @@ public class ReadNoteActivity extends ActionBarActivity {
         mNote = mService.getNote(noteId);
 
         if (mNote != null) {
-            TextView title = (TextView) findViewById(R.id.title);
-            title.setText(mNote.getTitle());
+            TextView titleView = (TextView) findViewById(R.id.title);
+            titleView.setText(mNote.getTitle());
 
-            TextView content = (TextView) findViewById(R.id.content);
-            content.setText(mNote.getContent());
+            TextView contentView = (TextView) findViewById(R.id.content);
+            contentView.setText(mNote.getContent());
 
-            TextView date = (TextView) findViewById(R.id.date);
-            date.setText(new Date(mNote.getUpdated()).toString());
+            TextView dateView = (TextView) findViewById(R.id.date);
+            dateView.setText(new Date(mNote.getUpdated()).toString());
+
+            Notebook notebook = mService.getNotebook(mNote.getDeleted()); // feature
+            TextView notebookView = (TextView) findViewById(R.id.notebook);
+
+            if (notebook != null) {
+                notebookView.setText(notebookView.getText().toString() + notebook.getName());
+            }
+            else {
+                notebookView.setText("Без блокнота");
+            }
         }
         else {
             Toast.makeText(ReadNoteActivity.this, R.string.err_retrieving_resource, Toast.LENGTH_SHORT).show();

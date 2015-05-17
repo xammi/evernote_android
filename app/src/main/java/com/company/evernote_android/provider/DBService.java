@@ -14,6 +14,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.evernote.edam.type.Note;
+import com.evernote.edam.type.Notebook;
 
 import java.util.Date;
 
@@ -58,6 +59,26 @@ public class DBService extends Service implements ClientAPI {
                 null,
                 Notes.UPDATED + " DESC");
         return cursor;
+    }
+
+    public Notebook getNotebook(long notebookId) {
+        String WHERE_ID = Notebooks._ID + "=" + ((Long) notebookId).toString();
+        Cursor cursor = getContentResolver().query(
+                Notebooks.CONTENT_URI,
+                Notebooks.ALL_COLUMNS_PROJECTION,
+                WHERE_ID,
+                null,
+                null
+        );
+        if (cursor == null || cursor.getCount() == 0)
+            return null;
+        else {
+            Notebook notebook = new Notebook();
+            cursor.moveToNext();
+            notebook.setName(cursor.getString(cursor.getColumnIndexOrThrow(Notebooks.NAME)));
+            cursor.close();
+            return notebook;
+        }
     }
 
     @Override
