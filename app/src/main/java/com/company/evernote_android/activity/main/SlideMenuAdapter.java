@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.company.evernote_android.R;
+import com.company.evernote_android.provider.EvernoteContract;
 
 import java.util.ArrayList;
 
@@ -57,6 +58,10 @@ public class SlideMenuAdapter extends BaseAdapter {
         iconView.setImageResource(item.icon);
         titleView.setText(item.title);
         counterView.setText(item.getCounterValue());
+
+        if (EvernoteContract.Notebooks.CONTENT_TYPE.equals(item.type())) {
+            convertView.setPadding(40, 0, 0, 0);
+        }
 
         return convertView;
     }

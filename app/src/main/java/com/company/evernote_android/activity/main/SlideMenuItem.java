@@ -8,8 +8,6 @@ public class SlideMenuItem {
     public int icon;
     private int counter;
 
-    public SlideMenuItem() {}
-
     public SlideMenuItem(String title, int icon) {
         this.title = title;
         this.icon = icon;
@@ -18,5 +16,9 @@ public class SlideMenuItem {
 
     public String getCounterValue() {
         return Integer.toString(counter);
+    }
+
+    public String type() {
+        return null;
     }
 }

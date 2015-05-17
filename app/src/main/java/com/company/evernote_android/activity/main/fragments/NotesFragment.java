@@ -84,7 +84,7 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
                 getActivity(),
                 Notes.CONTENT_URI,
                 Notes.ALL_COLUMNS_PROJECTION,
-                Notebooks.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal(),
+                Notes.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal(),
                 null,
                 Notes.UPDATED + " DESC");
     }

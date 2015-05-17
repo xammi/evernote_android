@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
@@ -34,9 +35,11 @@ import android.widget.Toast;
 
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.NewNoteActivity;
-import com.company.evernote_android.activity.ReadNoteActivity;
+import com.company.evernote_android.activity.main.fragments.NotImplemented;
+import com.company.evernote_android.activity.main.fragments.NotebookFragment;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
+import static com.company.evernote_android.provider.EvernoteContract.*;
 import com.company.evernote_android.utils.EvernoteSessionConstant;
 
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
@@ -46,6 +49,7 @@ import com.company.evernote_android.sync.EvernoteServiceHelper;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.InvalidAuthenticationException;
+import com.evernote.edam.type.Notebook;
 
 
 import java.util.ArrayList;
@@ -61,7 +65,8 @@ public class MainActivity extends ActionBarActivity {
 
     // nav drawer title
     private CharSequence appTitle;
-    private String[] slideMenuTitles;
+    private ArrayList<String> slideMenuTitles = null;
+    private ArrayList<SlideMenuItem> slideMenuItems = null;
 
     private EvernoteServiceHelper evernoteServiceHelper;
     private ClientAPI mService = null;
@@ -87,10 +92,6 @@ public class MainActivity extends ActionBarActivity {
         appTitle = getTitle();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         slideMenu = (ListView) findViewById(R.id.slide_menu);
-
-        SlideMenuAdapter adapter = new SlideMenuAdapter(MainActivity.this, loadSlideMenuItems());
-        slideMenu.setAdapter(adapter);
-        slideMenu.setOnItemClickListener(new SlideMenuClickListener());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -147,10 +148,6 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
-
-        if (savedInstanceState == null) {
-            displayView(0);
-        }
     }
 
     @Override
@@ -159,29 +156,21 @@ public class MainActivity extends ActionBarActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-    private ArrayList<SlideMenuItem> loadSlideMenuItems() {
-        slideMenuTitles = getResources().getStringArray(R.array.slide_menu_items);
-        TypedArray slideMenuIcons = getResources().obtainTypedArray(R.array.slide_menu_icons);
-
-        ArrayList<SlideMenuItem> slideMenuItems = new ArrayList<>();
-        for (int I = 0; I < slideMenuTitles.length; I++)
-            slideMenuItems.add(new SlideMenuItem(slideMenuTitles[I], slideMenuIcons.getResourceId(I, -1)));
-
-        return slideMenuItems;
-    }
-
     private void displayView(int position) {
-        setTitle(slideMenuTitles[position]);
+        setTitle(slideMenuTitles.get(position));
         drawerLayout.closeDrawer(slideMenu);
 
         // update the main content by replacing fragments
         Fragment fragment = null;
-        switch (position) {
-            case 0:
-                fragment = new NotesFragment();
-                break;
-            default:
-                break;
+        if (position == 0) {
+            fragment = new NotesFragment();
+        }
+        else if (Notebooks.CONTENT_TYPE.equals(slideMenuItems.get(position).type())) {
+            SlideMenuItem item = slideMenuItems.get(position);
+            fragment = NotebookFragment.newInstance(((NotebookMenuItem) item).getId());
+        }
+        else {
+            fragment = new NotImplemented();
         }
 
         if (fragment != null) {
@@ -192,7 +181,9 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onResume() {
-        displayView(0);
+        if (slideMenuTitles != null) {
+            displayView(0);
+        }
         super.onResume();
     }
 
@@ -273,6 +264,7 @@ public class MainActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             DBService.DBWriteBinder binder = (DBService.DBWriteBinder)iBinder;
             mService = binder.getClientApiService();
+            MainActivity.this.inflateSidebar();
         }
 
         @Override
@@ -296,6 +288,38 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private void inflateSidebar() {
+        Cursor cursor = mService.getAllNotebooks();
+        int nameIndex = cursor.getColumnIndexOrThrow(Notebooks.NAME);
+        int idIndex = cursor.getColumnIndexOrThrow(Notebooks._ID);
+
+        String[] slideMenuTitles = getResources().getStringArray(R.array.slide_menu_items);
+        TypedArray slideMenuIcons = getResources().obtainTypedArray(R.array.slide_menu_icons);
+        this.slideMenuTitles = new ArrayList<>();
+
+        this.slideMenuItems = new ArrayList<>();
+        for (int I = 0; I < slideMenuTitles.length; I++) {
+            this.slideMenuTitles.add(slideMenuTitles[I]);
+            this.slideMenuItems.add(new SlideMenuItem(slideMenuTitles[I], slideMenuIcons.getResourceId(I, -1)));
+
+            // add all notebooks to slidebar
+            if (I == 1) {
+                while (cursor.moveToNext()) {
+                    String notebookTitle = cursor.getString(nameIndex);
+                    long notebookId = cursor.getLong(idIndex);
+                    this.slideMenuItems.add(new NotebookMenuItem(notebookTitle, R.drawable.ic_drawer_white_notebooks, notebookId));
+                    this.slideMenuTitles.add(notebookTitle);
+                }
+            }
+        }
+
+        SlideMenuAdapter adapter = new SlideMenuAdapter(MainActivity.this, slideMenuItems);
+        slideMenu.setAdapter(adapter);
+        slideMenu.setOnItemClickListener(new SlideMenuClickListener());
+
+        displayView(0);
+    }
+
     private void createNotebook() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -308,8 +332,13 @@ public class MainActivity extends ActionBarActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
-                mService.insertNotebook(notebookName);
-                Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
+                if (mService.insertNotebook(notebookName)) {
+                    inflateSidebar();
+                    Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.err_creating_notebook, Toast.LENGTH_LONG).show();
+                }
             }
         });
 

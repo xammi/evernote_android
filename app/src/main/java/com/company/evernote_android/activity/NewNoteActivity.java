@@ -35,7 +35,7 @@ public class NewNoteActivity extends ActionBarActivity {
     private EditText mEditTextContent;
 
     private ClientAPI mService = null;
-    private int mSelectedNotebook = 1;
+    private int mSelectedNotebook = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +102,7 @@ public class NewNoteActivity extends ActionBarActivity {
 
         //TODO: line breaks need to be converted to render in ENML
         note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
-        boolean result = mService.insertNote(title.trim(), content, 1);
+        boolean result = mService.insertNote(title.trim(), content, mSelectedNotebook);
 
         if (result) {
             Log.d(LOGTAG, "Note was saved");
