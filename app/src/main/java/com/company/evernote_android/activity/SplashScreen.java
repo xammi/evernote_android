@@ -1,62 +1,58 @@
 package com.company.evernote_android.activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
-import java.io.IOException;
+import android.support.v7.app.ActionBarActivity;
 
 import com.company.evernote_android.R;
-import com.company.evernote_android.activity.auth.EvernoteAccount;
+//import com.company.evernote_android.activity.auth.EvernoteAccount;
 import com.company.evernote_android.activity.main.MainActivity;
-import com.company.evernote_android.provider.EvernoteContract;
+import com.company.evernote_android.utils.EvernoteSessionConstant;
+import com.evernote.client.android.EvernoteSession;
 
 
-public class SplashScreen extends Activity {
+public class SplashScreen extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         final Context context = SplashScreen.this;
-        final AccountManager accountManager = AccountManager.get(this);
+
+        final EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(context);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Account[] accounts = accountManager.getAccountsByType(EvernoteAccount.TYPE);
-                if (accounts.length == 0) {
-                    addNewAccount(accountManager, context);
+                if (! mEvernoteSession.isLoggedIn()) {
+                    mEvernoteSession.authenticate(context);
                 }
                 else {
-                    Account account = accounts[0];
-                    ContentResolver.requestSync(account, EvernoteContract.AUTHORITY, new Bundle());
-                    MainActivity.startMainActivity(context);
+                    startMainActivity(context);
                 }
             }
         }, 2000);
+
     }
 
-    private void addNewAccount(AccountManager am, final Context context) {
-        am.addAccount(EvernoteAccount.TYPE, EvernoteAccount.TOKEN_FULL_ACCESS, null, null, this,
-                new AccountManagerCallback<Bundle>() {
-                    @Override
-                    public void run(AccountManagerFuture<Bundle> future) {
-                        try {
-                            future.getResult();
-                            MainActivity.startMainActivity(context);
-                        } catch (OperationCanceledException | IOException | AuthenticatorException e) {
-                            SplashScreen.this.finish();
-                        }
-                    }
-                }, null);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case EvernoteSession.REQUEST_CODE_OAUTH:
+                if (resultCode == Activity.RESULT_OK) {
+                    startMainActivity(SplashScreen.this);
+                }
+                break;
+        }
+    }
+
+    public static void startMainActivity(Context ctx) {
+        Intent intent = new Intent(ctx, MainActivity.class);
+        ctx.startActivity(intent);
+        ((Activity) ctx).finish();
     }
 }

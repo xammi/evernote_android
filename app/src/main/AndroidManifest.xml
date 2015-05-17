@@ -24,10 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.auth.LoginActivity"
-            android:label="@string/title_activity_login">
-        </activity>
+
         <activity
             android:name=".activity.main.MainActivity"
             android:label="@string/app_name" >
@@ -54,21 +51,20 @@
 
         <provider
             android:name=".provider.EvernoteContentProvider"
+            android:authorities="com.company.evernote_android.provider"
+            android:exported="false"
+            />
+
             android:authorities="tp.evernote.provider.notes" />
 
         <service android:name=".sync.EvernoteService" />
 
-        <service
-            android:name=".activity.auth.EvernoteAuthService"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
 
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/evernote_authenticator" />
-        </service>
+        <service
+            android:name=".provider.DBService"
+            android:enabled="true"
+            android:exported="false"
+            />
 
     </application>
 

@@ -4,23 +4,9 @@
     <string name="app_name">_Evernote</string>
     <string name="empty"></string>
 
-    <string-array name="slide_menu_items">
-        <item>Заметки</item>
-        <item>Блокноты</item>
-        <item>Закладки</item>
-        <item>Теги</item>
-    </string-array>
-
-    <string-array name="slide_menu_icons">
-        <item>@drawable/ic_drawer_notes</item>
-        <item>@drawable/ic_drawer_notebooks</item>
-        <item>@drawable/ic_drawer_shortcuts</item>
-        <item>@drawable/ic_drawer_tags</item>
-    </string-array>
-
     <string name="title_activity_main">Evernote</string>
-    <string name="title_activity_new_note">NewNoteActivity</string>
-    <string name="title_activity_read_note">ReadNoteActivity</string>
+    <string name="title_activity_new_note">Создать заметку</string>
+    <string name="title_activity_read_note">Детали заметки</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
 
@@ -29,6 +15,7 @@
     <string name="menu_sync">Синхронизировать</string>
     <string name="menu_options">Настройки</string>
     <string name="menu_add_to_home_screen">Добавить на домашний экран</string>
+    <string name="menu_save_note">Сохранить заметку</string>
 
     <string name="title_section1">Все заметки</string>
     <string name="title_section2">Все блокноты</string>
@@ -38,15 +25,51 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
 
-    <string name="create_note">Создайте заметку</string>
+    <string name="new_note_title_hint">Дайте название заметке</string>
+    <string name="new_note_content_hint">Начните печатать текст</string>
     <string name="create_notebook">Создайте простой блокнот</string>
 
     <string name="evernote">Evernote МГТУ</string>
     <string name="sync">Синхронизация</string>
     <string name="sync_settings_summary">Sync</string>
     <string name="general_settings">Главные настройки</string>
-    <string name="action_settings">Настройки</string>
     <string name="logo_content_description">logo</string>
     <string name="search">Search</string>
+
+    <string name="label_select_notebook_button">Выбрать блокнот</string>
+
+    <string name="action_logout">Выйти</string>
+    <string name="action_add_notebook">Создать блокнот</string>
+
+    <string name="label_select_button">Выбрать изображение</string>
+    <string name="label_search">Поиск заметок</string>
+    <string name="label_message">Изображение не выбрано</string>
+    <string name="label_save_button">Сохранить</string>
+
+    <string name="msg_image_saved">Изображение сохранено</string>
+    <string name="msg_retrieved_resource">Ресурсы получены</string>
+    <string name="esdk__loading">Загрузка...</string>
+    <string name="note_saved">Заметка сохранена</string>
+    <string name="notes_searched">Поиск заметок завершен</string>
+    <string name="ok">Ok</string>
+    <string name="search_hint">Искать</string>
+    <string name="notebook_created">Блокнот создан</string>
+
+    <string name="empty_content_error">Все поля обязательны</string>
+    <string name="err_creating_note">Ошибка создания заметки</string>
+    <string name="err_image_selected">Выберите изображение</string>
+    <string name="err_retrieving_resource">Ошибка получения ресурса</string>
+    <string name="error_listing_notebooks">Ошибка отображения списка блокнотов</string>
+    <string name="error_creating_notestore">Ошибка создания хранилища</string>
+    <string name="error_saving_note">Ошибка сохранения заметки</string>
+    <string name="error_listing_notes">Ошибка отображения списка заметок</string>
+    <string name="error_create_notebook">Ошибка создания блокнота</string>
+
+    <string name="CANNOT_GET_LINKED_NOTEBOOK">Cannot get linked notebook</string>
+    <string name="CANT_LIST_APP_LNB">Can\'t select notebook: account can only access one linked notebook</string>
+    <string name="ERROR_GETTING_LINKED_NOTEBOOK">Error getting linked notebook</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

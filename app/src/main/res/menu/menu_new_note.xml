@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.company.evernote_android.activity.NewNoteActivity">
 
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <item android:id="@+id/action_save"
+        android:title="@string/menu_save_note"
+        android:icon="@drawable/ic_menu_save_note"
+        android:orderInCategory="500"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -8,28 +8,66 @@ import android.app.Service;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+
+import com.evernote.edam.type.Note;
 
 import java.util.Date;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
-public class QueryHelper extends Service implements ClientAPI {
-    private final IBinder mBinder = new QueryHelperBinder();
+public class DBService extends Service implements ClientAPI {
+    private final IBinder mBinder = new DBWriteBinder();
 
-    public QueryHelper() {}
+    public DBService() {}
 
-    public class QueryHelperBinder extends Binder {
+    public class DBWriteBinder extends Binder {
         public ClientAPI getClientApiService() {
-            return QueryHelper.this;
+            return DBService.this;
         }
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
+    }
+
+    @Override
+    public Cursor getAllNotebooks() {
+        String NOT_DELETED_SELECTION = Notebooks.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal();
+        Cursor cursor = getContentResolver().query(
+                Notebooks.CONTENT_URI,
+                Notebooks.ALL_COLUMNS_PROJECTION,
+                NOT_DELETED_SELECTION,
+                null,
+                null);
+        return cursor;
+    }
+
+    @Override
+    public Cursor getNotesFor(long notebookId) {
+        return null;
+    }
+
+    @Override
+    public Note getNote(long noteId) {
+        String WHERE_ID = Notes._ID + "=" + ((Long) noteId).toString();
+        Cursor cursor = getContentResolver().query(
+                Notes.CONTENT_URI,
+                Notes.ALL_COLUMNS_PROJECTION,
+                WHERE_ID,
+                null,
+                null
+        );
+        if (cursor == null)
+            return null;
+        else {
+            Note note = new Note();
+            return note;
+        }
     }
 
     @Override

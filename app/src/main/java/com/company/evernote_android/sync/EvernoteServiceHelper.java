@@ -2,7 +2,13 @@ package com.company.evernote_android.sync;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 
+import com.evernote.client.android.EvernoteSession;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -10,18 +16,26 @@ import java.util.UUID;
  */
 public class EvernoteServiceHelper {
 
-    private static Object lock = new Object();
-    private Context appContext;
-    private static EvernoteServiceHelper instance;
+    private static final String REQUEST_ID = "REQUEST_ID";
+    public static String ACTION_REQUEST_RESULT = "REQUEST_RESULT";
+    public static String EXTRA_REQUEST_ID = "EXTRA_REQUEST_ID";
+    public static String EXTRA_RESULT_CODE = "EXTRA_RESULT_CODE";
 
-    public EvernoteServiceHelper(Context context) {
-        this.appContext = context;
+    public static String TASK_NOTEBOOKS = "NOTEBOOKS";
+
+    private static Object lock = new Object();
+    private Context context;
+    private static EvernoteServiceHelper instance;
+    private Map<String,Long> pendingRequests = new HashMap<String,Long>();
+
+    private EvernoteServiceHelper(Context context) {
+        this.context = context;
     }
 
-    private static EvernoteServiceHelper getInstance(Context appContext) {
+    public static EvernoteServiceHelper getInstance(Context context) {
         synchronized (lock) {
             if(instance == null) {
-                instance = new EvernoteServiceHelper(appContext);
+                instance = new EvernoteServiceHelper(context);
             }
         }
         return instance;
@@ -34,15 +48,43 @@ public class EvernoteServiceHelper {
 
         long requestId = generateRequestID();
 
-        Intent intent = new Intent(appContext, EvernoteService.class);
+        Intent intent = new Intent(context, EvernoteService.class);
         intent.putExtra("REQUEST_ID", requestId);
 
         // create callback
 
         // put callback in intent
 
-        appContext.startService(intent);
+        context.startService(intent);
 
+
+        return requestId;
+    }
+
+    public long getNotebooks() {
+
+        if(pendingRequests.containsKey(TASK_NOTEBOOKS)){
+            return pendingRequests.get(TASK_NOTEBOOKS);
+        }
+
+        long requestId = generateRequestID();
+        pendingRequests.put(TASK_NOTEBOOKS, requestId);
+
+        ResultReceiver serviceCallback = new ResultReceiver(null){
+
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                handleNotebooksResponce(resultCode, resultData);
+            }
+
+        };
+
+        Intent intent = new Intent(context, EvernoteService.class);
+        intent.putExtra(REQUEST_ID, requestId);
+        intent.putExtra(EvernoteService.REQUEST_CALLBACK, serviceCallback);
+        intent.putExtra(EvernoteService.REQUEST_TYPE, EvernoteService.REQUEST_TYPE_NOTEBOOK);
+
+        context.startService(intent);
 
         return requestId;
     }
@@ -52,6 +94,22 @@ public class EvernoteServiceHelper {
 
 
         // call callback or send broadcast?
+    }
+
+    public void handleNotebooksResponce(int resultCode, Bundle resultData) {
+
+        Intent intent = (Intent)resultData.getParcelable(EvernoteService.INTENT_IDENTIFIER);
+
+        if (intent != null) {
+            long requestId = intent.getLongExtra(REQUEST_ID, 0);
+            pendingRequests.remove(TASK_NOTEBOOKS);
+            Intent resultBroadcast = new Intent(ACTION_REQUEST_RESULT);
+            resultBroadcast.putExtra(EXTRA_REQUEST_ID, requestId);
+            resultBroadcast.putExtra(EXTRA_RESULT_CODE, resultCode);
+
+            context.sendBroadcast(resultBroadcast);
+        }
+
     }
 
     private long generateRequestID() {

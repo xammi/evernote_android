@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="slide_menu_items">
+        <item>Заметки</item>
+        <item>Блокноты</item>
+        <item>Закладки</item>
+        <item>Теги</item>
+    </string-array>
+
+    <string-array name="slide_menu_icons">
+        <item>@drawable/ic_drawer_notes</item>
+        <item>@drawable/ic_drawer_notebooks</item>
+        <item>@drawable/ic_drawer_shortcuts</item>
+        <item>@drawable/ic_drawer_tags</item>
+    </string-array>
+</resources>

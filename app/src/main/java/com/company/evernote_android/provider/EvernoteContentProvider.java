@@ -77,22 +77,16 @@ public class EvernoteContentProvider extends ContentProvider {
         builder.setTables(getTableName(uri));
 
         Cursor cursor = builder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
-        String sync = values.getAsString(General.STATE_SYNC_REQUIRED);
-        StateSyncRequired syncState = StateSyncRequired.valueOf(sync);
-        boolean syncToNetwork = StateSyncRequired.PENDING.equals(syncState);
-
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
         long id = dbConnection.insertOrThrow(getTableName(uri), null, values);
         Uri result = ContentUris.withAppendedId(getContentUri(uri), id);
 
-        getContext().getContentResolver().notifyChange(result, null, syncToNetwork);
         return result;
     }
 
@@ -101,7 +95,6 @@ public class EvernoteContentProvider extends ContentProvider {
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
         int deleted = dbConnection.delete(getTableName(uri), selection, selectionArgs);
 
-        getContext().getContentResolver().notifyChange(uri, null, false);
         return deleted;
     }
 
@@ -109,10 +102,6 @@ public class EvernoteContentProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs)
     {
-        String sync = values.getAsString(Notebooks.STATE_SYNC_REQUIRED);
-        StateSyncRequired syncState = StateSyncRequired.valueOf(sync);
-        boolean syncToNetwork = StateSyncRequired.PENDING.equals(syncState);
-
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
 
         long id = Long.parseLong(uri.getLastPathSegment());
@@ -120,7 +109,6 @@ public class EvernoteContentProvider extends ContentProvider {
         int updated = dbConnection.update(getTableName(uri), values, selection, null);
         Uri result = ContentUris.withAppendedId(getContentUri(uri), id);
 
-        getContext().getContentResolver().notifyChange(result, null, syncToNetwork);
         return updated;
     }
 }
