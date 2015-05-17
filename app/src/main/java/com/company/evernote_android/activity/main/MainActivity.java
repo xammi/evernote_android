@@ -327,6 +327,7 @@ public class MainActivity extends ActionBarActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
+//                mService.insertNotebook(notebookName);
                 saveNotebookRequestId = evernoteServiceHelper.saveNotebook(notebookName);
                 inflateSidebar();
             }

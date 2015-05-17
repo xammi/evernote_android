@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
+
+import com.company.evernote_android.provider.DBConverter;
 import com.company.evernote_android.sync.EvernoteService;
 import com.company.evernote_android.sync.rest.GetNotesCallback;
 import com.company.evernote_android.sync.rest.GetNotesRestMethod;
@@ -37,25 +39,12 @@ public class NoteProcessor {
             public void sendNotes(ConcurrentLinkedQueue<Note> notes, int statusCode) {
 
                 if (statusCode == StatusCode.OK) {
-                    // update Notes in ContentProvide
                     for (Note note : notes) {
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(Notes.TITLE, note.getTitle());
-                        contentValues.put(Notes.CONTENT, note.getContent());
-                        contentValues.put(Notes.CREATED, note.getCreated());
-                        contentValues.put(Notes.UPDATED, note.getUpdated());
-
-                        contentValues.put(Notes.NOTEBOOKS_GUID, note.getNotebookGuid());
-                        contentValues.put(Notebooks.GUID, note.getGuid());
-                        contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
-
-                        contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
+                        ContentValues contentValues = DBConverter.noteToValues(note);
                         context.getContentResolver().insert(Notes.CONTENT_URI, contentValues);
                     }
                 }
-
                 processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTES);
-
             }
         };
         return callback;
