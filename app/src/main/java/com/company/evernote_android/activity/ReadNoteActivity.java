@@ -116,7 +116,6 @@ public class ReadNoteActivity extends ActionBarActivity {
             titleView.setText(mNote.getTitle());
 
             TextView contentView = (TextView) findViewById(R.id.content);
-
             contentView.setText(mNote.getContent());
 
             TextView dateView = (TextView) findViewById(R.id.date);
@@ -126,7 +125,7 @@ public class ReadNoteActivity extends ActionBarActivity {
             TextView notebookView = (TextView) findViewById(R.id.notebook);
 
             if (notebook != null) {
-                notebookView.setText(notebookView.getText().toString() + " " + notebook.getName());
+                notebookView.setText("Блокнот: " + notebook.getName());
             }
             else {
                 notebookView.setText("Без блокнота");
@@ -138,19 +137,17 @@ public class ReadNoteActivity extends ActionBarActivity {
     }
 
     private void deleteNote() {
-
-        // TODO нужно в базе сделать флаг state_deleting и  поставить тут state_deleting = true, удалять тут не нужно
-        boolean deleted = mService.deleteNote(noteId);
-        if (deleted) {
+        if (mService.deleteNote(noteId)) {
             finish();
         }
         else {
             Toast.makeText(ReadNoteActivity.this, R.string.error_deleting_note, Toast.LENGTH_SHORT).show();
         }
-
         // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
-        deleteNoteRequestId = evernoteServiceHelper.deleteNote(mService.getNote(noteId).getGuid());
-
+        String guid = mService.getNote(noteId).getGuid();
+        if (guid == null) {
+            deleteNoteRequestId = evernoteServiceHelper.deleteNote(guid);
+        }
     }
 
     @Override
@@ -173,7 +170,6 @@ public class ReadNoteActivity extends ActionBarActivity {
             startActivity(intent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -187,7 +183,6 @@ public class ReadNoteActivity extends ActionBarActivity {
                 if (resultRequestId == deleteNoteRequestId) {
                     showToast(resultCode, R.string.sync_deleting_note, R.string.sync_error_deleting_note);
                 }
-
             }
         };
 

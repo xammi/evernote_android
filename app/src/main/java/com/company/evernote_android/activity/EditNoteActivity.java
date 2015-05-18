@@ -128,7 +128,10 @@ public class EditNoteActivity extends NewNoteActivity {
         }
 
         // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
-        updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote(mService.getNote(noteId)));
+        Note updatedNote = mService.getNote(noteId);
+        if (updatedNote.getGuid() != null) {
+            updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote());
+        }
     }
 
     private void registerBroadcastReceiver() {
