@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NavUtils;
@@ -123,24 +124,21 @@ public class NewNoteActivity extends ActionBarActivity {
         String noteContent = EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX;
         note.setContent(noteContent);
 
-
-        long noteId = mService.insertNote(title.trim(), content, mSelectedNotebook);
-
-        long created = System.currentTimeMillis();
-
-        if (noteId > 0) {
+        try {
+            long noteId = mService.insertNote(title.trim(), content, mSelectedNotebook);
+            long created = System.currentTimeMillis();
 
             Log.d(LOGTAG, "Note was saved");
             Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
+
+            String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
+            ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created, noteId);
+            saveNoteRequestId = evernoteServiceHelper.saveNote(parcelableNote);
         }
-        else {
-            Log.d(LOGTAG, "Error saving note");
+        catch (SQLException e) {
+            Log.d(LOGTAG, e.getMessage());
             Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
         }
-
-        String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
-        ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created, noteId);
-        saveNoteRequestId = evernoteServiceHelper.saveNote(parcelableNote);
     }
 
 

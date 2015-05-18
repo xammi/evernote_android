@@ -9,6 +9,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -109,7 +110,7 @@ public class DBService extends Service implements ClientAPI {
     }
 
     @Override
-    public long insertNotebook(String name) {
+    public long insertNotebook(String name) throws SQLException {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notebooks.NAME, name);
@@ -122,7 +123,7 @@ public class DBService extends Service implements ClientAPI {
     }
 
     @Override
-    public long insertNote(String title, String content, long notebookId) {
+    public long insertNote(String title, String content, long notebookId) throws SQLException {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notes.TITLE, title);

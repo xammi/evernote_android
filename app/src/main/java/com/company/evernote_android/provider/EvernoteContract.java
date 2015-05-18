@@ -33,7 +33,7 @@ public final class EvernoteContract {
                 GUID + " TEXT UNIQUE" + "," +
                 CREATED + " INTEGER NOT NULL" + "," +
                 UPDATED + " INTEGER NOT NULL" + "," +
-                USN + " TEXT UNIQUE" + "," +
+                USN + " TEXT" + "," +
                 STATE_DELETED + " INTEGER NOT NULL" + "," +
                 STATE_SYNC_REQUIRED + " INTEGER NOT NULL" + ");";
 
@@ -62,7 +62,7 @@ public final class EvernoteContract {
                 GUID + " TEXT UNIQUE" + "," +
                 CREATED + " INTEGER NOT NULL" + "," +
                 UPDATED + " INTEGER NOT NULL" + "," +
-                USN + " INTEGER UNIQUE" + "," +
+                USN + " INTEGER" + "," +
                 STATE_DELETED + " INTEGER NOT NULL" + "," +
                 STATE_SYNC_REQUIRED + " INTEGER NOT NULL" + "," +
                 NOTEBOOKS_ID + " INTEGER NOT NULL" +

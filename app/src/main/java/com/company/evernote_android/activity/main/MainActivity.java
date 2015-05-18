@@ -53,6 +53,7 @@ import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.InvalidAuthenticationException;
 
 
+import android.database.SQLException;
 import java.util.ArrayList;
 
 
@@ -311,18 +312,16 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
 
-                long notebookId = mService.insertNotebook(notebookName);
-                if (notebookId > 0) {
-
+                try {
+                    long notebookId = mService.insertNotebook(notebookName);
                     inflateSidebar();
                     Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
+                    saveNotebookRequestId = evernoteServiceHelper.saveNotebook(notebookName, notebookId);
                 }
-                else {
-                    Toast.makeText(getApplicationContext(), R.string.err_creating_notebook, Toast.LENGTH_LONG).show();
+                catch (SQLException e) {
+                    Log.e(LOGTAG, e.getMessage());
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-                saveNotebookRequestId = evernoteServiceHelper.saveNotebook(notebookName, notebookId);
-
-                inflateSidebar();
             }
         });
 
@@ -354,10 +353,14 @@ public class MainActivity extends ActionBarActivity {
                 int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
                 if (showSyncMessageFlag && resultRequestId == notebooksRequestId) {
+                    inflateSidebar();
                     showToast(resultCode, R.string.sync_notebooks_ok, R.string.sync_notebooks_error);
-                } else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
+                }
+                else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
+                    displayView(0);
                     showToast(resultCode, R.string.sync_notes_ok, R.string.sync_notes_error);
-                } else if (resultRequestId == saveNotebookRequestId) {
+                }
+                else if (resultRequestId == saveNotebookRequestId) {
                     showToast(resultCode, R.string.sync_notebook_created, R.string.sync_error_notebook_created);
                 }
             }
@@ -366,7 +369,6 @@ public class MainActivity extends ActionBarActivity {
         IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
         registerReceiver(broadcastReceiver, filter);
     }
-
 
     private void showToast(int statusCode, int messageOk, int messageError) {
         int message;
@@ -378,5 +380,4 @@ public class MainActivity extends ActionBarActivity {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
 }

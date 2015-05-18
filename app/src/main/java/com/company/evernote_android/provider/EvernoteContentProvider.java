@@ -87,22 +87,27 @@ public class EvernoteContentProvider extends ContentProvider {
     private Long getNotebookByGUID(String GUID) {
         String WHERE_ID = Notebooks.GUID + "='" + GUID + "'";
         Cursor cursor = query(Notebooks.CONTENT_URI, new String[]{Notebooks._ID}, WHERE_ID, null, null);
-        if (cursor == null || cursor.getCount() == 0)
+        if (cursor == null || cursor.getCount() == 0) {
             return null;
+        }
         else {
             cursor.moveToNext();
-            return cursor.getLong(cursor.getColumnIndexOrThrow(Notebooks._ID));
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(Notebooks._ID));
+            cursor.close();
+            return id;
         }
     }
 
     private Long getIdByWhere(Uri uri, String WHERE) {
         Cursor cursor = query(getContentUri(uri), new String[]{General._ID}, WHERE, null, null);
         cursor.moveToNext();
-        return cursor.getLong(cursor.getColumnIndexOrThrow(General._ID));
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(General._ID));
+        cursor.close();
+        return id;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(Uri uri, ContentValues values) throws SQLException {
         String tableName = getTableName(uri);
 
         if (values.containsKey(Notes.NOTEBOOKS_GUID) && !values.containsKey(Notes.NOTEBOOKS_ID)) {
@@ -119,11 +124,8 @@ public class EvernoteContentProvider extends ContentProvider {
             String WHERE_ID = General.GUID + "='" + values.getAsString(General.GUID) + "'";
             int updated = dbConnection.update(tableName, values, WHERE_ID, null);
 
-            int syncStatus = values.getAsInteger(Notebooks.STATE_SYNC_REQUIRED);
-            if (updated == 0 && tableName.equals(Notebooks.TABLE_NAME) &&
-                    StateSyncRequired.PENDING.ordinal() == syncStatus)
-            {
-                WHERE_ID = Notebooks.NAME + "='" + values.getAsString(Notebooks.NAME) + "'";
+            if (updated == 0) {
+                throw new SQLException("Такой элемент уже существует");
             }
             id = getIdByWhere(uri, WHERE_ID);
         }
