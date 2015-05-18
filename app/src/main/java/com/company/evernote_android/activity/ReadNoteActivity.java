@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,8 @@ import com.evernote.edam.type.Notebook;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ReadNoteActivity extends ActionBarActivity {
@@ -113,6 +116,7 @@ public class ReadNoteActivity extends ActionBarActivity {
             titleView.setText(mNote.getTitle());
 
             TextView contentView = (TextView) findViewById(R.id.content);
+
             contentView.setText(mNote.getContent());
 
             TextView dateView = (TextView) findViewById(R.id.date);

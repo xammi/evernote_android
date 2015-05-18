@@ -5,6 +5,9 @@ import android.content.ContentValues;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
 /**
@@ -28,7 +31,12 @@ public class DBConverter {
     public static ContentValues noteToValues(Note note) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Notes.TITLE, note.getTitle());
-        contentValues.put(Notes.CONTENT, note.getContent());
+
+        final Pattern pattern = Pattern.compile("<en-note>(.+?)</en-note>");
+        final Matcher matcher = pattern.matcher(note.getContent());
+        matcher.find();
+
+        contentValues.put(Notes.CONTENT, matcher.group(1));
         contentValues.put(Notes.CREATED, note.getCreated());
         contentValues.put(Notes.UPDATED, note.getUpdated());
 

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.ReadNoteActivity;
 
+import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,12 +56,13 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
             if (contentString.length() > 30) {
                 contentString = contentString.substring(0, 30) + "...";
             }
+
             content.setText(contentString);
 
             TextView date = (TextView) view.findViewById(R.id.date);
             int dateIndex = cursor.getColumnIndexOrThrow(Notes.UPDATED);
             String dateString = cursor.getString(dateIndex);
-            date.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(Long.parseLong(dateString))).toString());
+            date.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(Long.parseLong(dateString))));
         }
     }
 
@@ -99,4 +102,5 @@ public class NotesFragment extends ListFragment implements LoaderManager.LoaderC
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mAdapter.swapCursor(null);
     }
+
 }
