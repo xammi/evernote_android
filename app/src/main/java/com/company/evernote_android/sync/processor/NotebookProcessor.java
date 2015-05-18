@@ -62,10 +62,9 @@ public class NotebookProcessor {
             public void sendNotebook(Notebook notebook, int statusCode, long notebookId) {
 
                 if (statusCode == StatusCode.OK) {
-                    // TODO id
-                    // TODO нужно только обновить, т.к. теперь он сохранен в активити + надо в активи поставить флаг sync=true, что блокнот не синронизирован, а тут это флаг сделать sync=false
-                    ContentValues contentValues = DBConverter.notebookToValues(notebook);
-                    context.getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
+                    ContentValues contentValues = DBConverter.prepareNewUpdate();
+                    String WHERE_ID = Notebooks._ID + "=" + notebookId;
+                    context.getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
                 processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTEBOOK);
             }

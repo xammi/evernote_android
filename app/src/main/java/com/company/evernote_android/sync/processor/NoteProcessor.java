@@ -54,6 +54,7 @@ public class NoteProcessor {
         SendNotesCallback callback = new SendNotesCallback() {
             @Override
             public void sendNotes(ConcurrentLinkedQueue<Note> notes, int statusCode) {
+
                 if (statusCode == StatusCode.OK) {
                     for (Note note : notes) {
                         ContentValues contentValues = DBConverter.noteToValues(note);
@@ -70,13 +71,12 @@ public class NoteProcessor {
         SendNoteCallback callback = new SendNoteCallback() {
             @Override
             public void sendNote(Note note, int statusCode, long noteId) {
-                // TODO id
-                // TODO обновить, sync = false
+
                 if (statusCode == StatusCode.OK) {
-                    // save Note in ContentProvide
-
+                    ContentValues contentValues = DBConverter.prepareNewUpdate();
+                    String WHERE_ID = Notes._ID + "=" + noteId;
+                    context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
-
                 processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTE);
             }
         };
@@ -88,15 +88,9 @@ public class NoteProcessor {
             @Override
             public void sendNote(Note note, int statusCode, long noteId) {
 
-                // TODO обновить, sync = false
                 if (statusCode == StatusCode.OK) {
-                    ContentValues contentValues = new ContentValues();
-                    Long currentTime = new Date().getTime();
-
-                    contentValues.put(Notes.UPDATED, currentTime);
+                    ContentValues contentValues = DBConverter.prepareNewUpdate();
                     contentValues.put(Notes.GUID, note.getGuid());
-                    contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
-
                     String WHERE_ID = Notes.GUID + "=" + note.getGuid();
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
@@ -113,12 +107,7 @@ public class NoteProcessor {
                 // data - The Update Sequence Number for this change within the account.
 
                 if (statusCode == StatusCode.OK) {
-                    ContentValues contentValues = new ContentValues();
-                    Long currentTime = new Date().getTime();
-
-                    contentValues.put(Notes.UPDATED, currentTime);
-                    contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
-
+                    ContentValues contentValues = DBConverter.prepareNewUpdate();
                     String WHERE_ID = Notes.GUID + "=" + guid;
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
 

@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +52,14 @@ public class DBConverter {
         }
 
         contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
+        return contentValues;
+    }
+
+    public static ContentValues prepareNewUpdate() {
+        ContentValues contentValues = new ContentValues();
+        Long currentTime = new Date().getTime();
+        contentValues.put(General.UPDATED, currentTime);
+        contentValues.put(General.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
         return contentValues;
     }
 }
