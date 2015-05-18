@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
 
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
-        syncNotebooksAndNotes();
+        //syncNotebooksAndNotes();
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -111,13 +111,14 @@ public class MainActivity extends ActionBarActivity {
                 long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
                 int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
-                inflateSidebar();
+                //inflateSidebar(); тут не дожно быть, переместил ниже под условие
 
                 if (showSyncMessageFlag && resultRequestId == notebooksRequestId) {
                     showToast(resultCode, "Синхронизация блокнотов прошла успешно", "Ошибка при синхронизации блокнотов");
                 } else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
                     showToast(resultCode, "Синхронизация заметок прошла успешно", "Ошибка при синхронизации заметок");
                 } else if (resultRequestId == saveNotebookRequestId) {
+                    inflateSidebar();
                     showToast(resultCode, "Блокнот успешно сохранен", "Ошибка при сохранении блокнота");
                 }
             }

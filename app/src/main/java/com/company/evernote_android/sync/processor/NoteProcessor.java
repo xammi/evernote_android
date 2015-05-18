@@ -9,6 +9,8 @@ import com.company.evernote_android.provider.DBConverter;
 import com.company.evernote_android.sync.EvernoteService;
 import com.company.evernote_android.sync.rest.GetNotesCallback;
 import com.company.evernote_android.sync.rest.GetNotesRestMethod;
+import com.company.evernote_android.sync.rest.SaveNoteCallback;
+import com.company.evernote_android.sync.rest.SaveNoteRestMethod;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.Note;
@@ -30,7 +32,10 @@ public class NoteProcessor {
 
     public void  getNotes(EvernoteSession session, int maxNotes) {
         GetNotesRestMethod.execute(makeGetNotesCallback(), session, maxNotes);
+    }
 
+    public void  saveNote(EvernoteSession session, String title, String content, String notebookGuid, long created) {
+        SaveNoteRestMethod.execute(makeSaveNoteCallback(), session, title, content, notebookGuid, created);
     }
 
     private GetNotesCallback makeGetNotesCallback() {
@@ -45,6 +50,23 @@ public class NoteProcessor {
                     }
                 }
                 processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTES);
+            }
+        };
+        return callback;
+    }
+
+    private SaveNoteCallback makeSaveNoteCallback() {
+        SaveNoteCallback callback = new SaveNoteCallback() {
+            @Override
+            public void sendNote(Note note, int statusCode) {
+
+                if (statusCode == StatusCode.OK) {
+                    // update Note in ContentProvide
+
+                }
+
+                processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTE);
+
             }
         };
         return callback;

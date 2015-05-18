@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
+import com.evernote.edam.type.Note;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -80,6 +82,23 @@ public class EvernoteServiceHelper {
         return result.getRequestId();
     }
 
+    public long saveNote(String title, String content, String notebookGuid, long created) {
+        Result result = makeRequest(EvernoteService.TYPE_SAVE_NOTEBOOK);
+
+        if (result.isPending()) {
+            return result.getRequestId();
+        }
+
+        Intent intent = result.getIntent();
+        intent.putExtra("title", title);
+        intent.putExtra("content", content);
+        intent.putExtra("notebookGuid", notebookGuid);
+        intent.putExtra("created", created);
+        context.startService(intent);
+
+        return result.getRequestId();
+    }
+
 
     private Result makeRequest(String type_request) {
 
@@ -98,22 +117,10 @@ public class EvernoteServiceHelper {
     private void handleResponce(int resultCode, Bundle resultData) {
         Intent intent = (Intent)resultData.getParcelable(EvernoteService.INTENT_IDENTIFIER);
         if (intent != null) {
+
             long requestId = intent.getLongExtra(REQUEST_ID, 0);
             String requestType = intent.getStringExtra(EvernoteService.ACTION_TYPE);
-
-            switch (requestType) {
-                case EvernoteService.TYPE_GET_NOTEBOOKS:
-                    pendingRequests.remove(requestType);
-                    break;
-                case EvernoteService.TYPE_GET_NOTES:
-                    pendingRequests.remove(requestType);
-                    break;
-                case EvernoteService.TYPE_SAVE_NOTEBOOK:
-                    pendingRequests.remove(requestType);
-                    break;
-
-            }
-
+            pendingRequests.remove(requestType);
             Intent resultBroadcast = new Intent(ACTION_REQUEST_RESULT);
             resultBroadcast.putExtra(EXTRA_REQUEST_ID, requestId);
             resultBroadcast.putExtra(EXTRA_RESULT_CODE, resultCode);

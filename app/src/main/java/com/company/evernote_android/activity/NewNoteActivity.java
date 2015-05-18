@@ -24,8 +24,11 @@ import com.company.evernote_android.R;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
 import static com.company.evernote_android.provider.EvernoteContract.*;
+
+import com.company.evernote_android.sync.EvernoteServiceHelper;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.edam.type.Note;
+import com.evernote.edam.type.Notebook;
 
 
 public class NewNoteActivity extends ActionBarActivity {
@@ -36,6 +39,8 @@ public class NewNoteActivity extends ActionBarActivity {
 
     protected ClientAPI mService = null;
     protected long mSelectedNotebook = 1;
+
+    private EvernoteServiceHelper evernoteServiceHelper;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +62,8 @@ public class NewNoteActivity extends ActionBarActivity {
 
         mEditTextTitle = (EditText) findViewById(R.id.text_title);
         mEditTextContent = (EditText) findViewById(R.id.text_content);
+
+        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -97,23 +104,28 @@ public class NewNoteActivity extends ActionBarActivity {
             return;
         }
 
-        Note note = new Note();
-        note.setTitle(title);
+        //Note note = new Note();
+        //note.setTitle(title);
 
         //TODO: line breaks need to be converted to render in ENML
-        note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
-        boolean result = mService.insertNote(title.trim(), content, mSelectedNotebook);
+        //note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
+        String noteContent = EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX;
 
-        mService.getNotebook(mSelectedNotebook).getGuid();
+        //boolean result = mService.insertNote(title.trim(), content, mSelectedNotebook);
 
-        if (result) {
-            Log.d(LOGTAG, "Note was saved");
-            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
-        }
-        else {
-            Log.d(LOGTAG, "Error saving note");
-            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
-        }
+        String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
+        long created = System.currentTimeMillis();
+
+        evernoteServiceHelper.saveNote(title.trim(), noteContent, notebookGuid, created);
+
+//        if (result) {
+//            Log.d(LOGTAG, "Note was saved");
+//            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
+//        }
+//        else {
+//            Log.d(LOGTAG, "Error saving note");
+//            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
+//        }
     }
 
 
