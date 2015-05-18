@@ -95,6 +95,12 @@ public class EvernoteContentProvider extends ContentProvider {
         }
     }
 
+    private Long getIdByWhere(Uri uri, String WHERE) {
+        Cursor cursor = query(getContentUri(uri), new String[]{General._ID}, WHERE, null, null);
+        cursor.moveToNext();
+        return cursor.getLong(cursor.getColumnIndexOrThrow(General._ID));
+    }
+
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         String tableName = getTableName(uri);
@@ -105,23 +111,23 @@ public class EvernoteContentProvider extends ContentProvider {
         }
 
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
-        Uri result = null;
+        long id = 0;
         try {
-            long id = dbConnection.insertOrThrow(tableName, null, values);
-            result = ContentUris.withAppendedId(getContentUri(uri), id);
-            return result;
+            id = dbConnection.insertOrThrow(tableName, null, values);
         }
         catch (SQLException e) {
             String WHERE_ID = General.GUID + "='" + values.getAsString(General.GUID) + "'";
             int updated = dbConnection.update(tableName, values, WHERE_ID, null);
 
-            if (updated > 0) {
-                Cursor cursor = query(getContentUri(uri), new String[]{General._ID}, WHERE_ID, null, null);
-                cursor.moveToNext();
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(General._ID));
-                result = ContentUris.withAppendedId(getContentUri(uri), id);
+            int syncStatus = values.getAsInteger(Notebooks.STATE_SYNC_REQUIRED);
+            if (updated == 0 && tableName.equals(Notebooks.TABLE_NAME) &&
+                    StateSyncRequired.PENDING.ordinal() == syncStatus)
+            {
+                WHERE_ID = Notebooks.NAME + "='" + values.getAsString(Notebooks.NAME) + "'";
             }
+            id = getIdByWhere(uri, WHERE_ID);
         }
+        Uri result = ContentUris.withAppendedId(getContentUri(uri), id);
         return result;
     }
 
