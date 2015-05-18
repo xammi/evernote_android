@@ -19,7 +19,7 @@ public class SaveNotebookRestMethod {
     public SaveNotebookRestMethod() {
     }
 
-    public static void execute(final SendNotebookCallback callback, final EvernoteSession mEvernoteSession, String notebookName) {
+    public static void execute(final SendNotebookCallback callback, final EvernoteSession mEvernoteSession, String notebookName, final long notebookId) {
 
         final Notebook notebook = new Notebook();
         notebook.setName(notebookName);
@@ -29,12 +29,12 @@ public class SaveNotebookRestMethod {
                 mEvernoteSession.getClientFactory().createNoteStoreClient().createNotebook(notebook, new OnClientCallback<Notebook>() {
                     @Override
                     public void onSuccess(Notebook data) {
-                        callback.sendNotebook(notebook, StatusCode.OK);
+                        callback.sendNotebook(notebook, StatusCode.OK, notebookId);
                     }
 
                     @Override
                     public void onException(Exception exception) {
-                        callback.sendNotebook(null, StatusCode.ERROR);
+                        callback.sendNotebook(null, StatusCode.ERROR, notebookId);
                     }
                 });
 

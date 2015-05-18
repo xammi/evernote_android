@@ -8,6 +8,6 @@ import com.evernote.edam.type.Note;
  */
 public interface SendNoteCallback {
 
-    public void sendNote(Note note, int statusCode);
+    public void sendNote(Note note, int statusCode, long noteId);
 
 }

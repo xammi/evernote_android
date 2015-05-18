@@ -64,13 +64,14 @@ public class EvernoteService extends IntentService {
                 break;
             case TYPE_SAVE_NOTEBOOK:
                 String notebookName = intent.getStringExtra("notebookName");
+                Long notebookId = intent.getLongExtra("notebookId", 0);
                 notebookProcessor = new NotebookProcessor(getApplicationContext(), makeProcessorCallback());
-                notebookProcessor.saveNotebook(mEvernoteSession, notebookName);
+                notebookProcessor.saveNotebook(mEvernoteSession, notebookName, notebookId);
                 break;
             case TYPE_SAVE_NOTE:
                 parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");
                 noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
-                noteProcessor.saveNote(mEvernoteSession, parcelableNote.toNote());
+                noteProcessor.saveNote(mEvernoteSession, parcelableNote.toNote(), parcelableNote.getNoteId());
                 break;
             case TYPE_UPDATE_NOTE:
                 parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");

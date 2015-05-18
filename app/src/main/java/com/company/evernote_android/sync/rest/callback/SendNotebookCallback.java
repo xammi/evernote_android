@@ -7,6 +7,6 @@ import com.evernote.edam.type.Notebook;
  */
 public interface SendNotebookCallback {
 
-    public void sendNotebook(Notebook notebook, int statusCode);
+    public void sendNotebook(Notebook notebook, int statusCode, long notebookId);
 
 }

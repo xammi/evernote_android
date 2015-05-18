@@ -18,19 +18,19 @@ public class SaveNoteRestMethod {
     public SaveNoteRestMethod() {
     }
 
-    public static void execute(final SendNoteCallback callback, final EvernoteSession mEvernoteSession, Note note) {
+    public static void execute(final SendNoteCallback callback, final EvernoteSession mEvernoteSession, Note note, final long noteId) {
 
         if (mEvernoteSession.isLoggedIn()) {
             try {
                 mEvernoteSession.getClientFactory().createNoteStoreClient().createNote(note, new OnClientCallback<Note>() {
                     @Override
                     public void onSuccess(Note data) {
-                        callback.sendNote(data, StatusCode.OK);
+                        callback.sendNote(data, StatusCode.OK, noteId);
                     }
 
                     @Override
                     public void onException(Exception exception) {
-                        callback.sendNote(null, StatusCode.ERROR);
+                        callback.sendNote(null, StatusCode.ERROR, noteId);
                     }
                 });
             } catch (TTransportException exception) {

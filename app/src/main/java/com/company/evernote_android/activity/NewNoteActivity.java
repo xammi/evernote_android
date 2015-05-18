@@ -123,11 +123,13 @@ public class NewNoteActivity extends ActionBarActivity {
         String noteContent = EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX;
         note.setContent(noteContent);
 
-        long id = mService.insertNote(title.trim(), content, mSelectedNotebook);
+
+        long noteId = mService.insertNote(title.trim(), content, mSelectedNotebook);
 
         long created = System.currentTimeMillis();
 
-        if (id > 0) {
+        if (noteId > 0) {
+
             Log.d(LOGTAG, "Note was saved");
             Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
         }
@@ -137,7 +139,7 @@ public class NewNoteActivity extends ActionBarActivity {
         }
 
         String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
-        ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created);
+        ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created, noteId);
         saveNoteRequestId = evernoteServiceHelper.saveNote(parcelableNote);
     }
 

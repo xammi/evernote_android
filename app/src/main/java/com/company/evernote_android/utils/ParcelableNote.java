@@ -16,6 +16,7 @@ public class ParcelableNote implements Parcelable {
     private String notebookGuid;
     private long created;
     private long updated;
+    private long noteId;
 
     private ParcelableNote(Parcel parcel) {
         title = parcel.readString();
@@ -24,16 +25,18 @@ public class ParcelableNote implements Parcelable {
         notebookGuid = parcel.readString();
         created = parcel.readLong();
         updated = parcel.readLong();
+        noteId = parcel.readLong();
     }
 
     public ParcelableNote() {
     }
 
-    public ParcelableNote(String title, String content, String notebookGuid, long created) {
+    public ParcelableNote(String title, String content, String notebookGuid, long created, long noteId) {
         this.title = title;
         this.content = content;
         this.notebookGuid = notebookGuid;
         this.created = created;
+        this.noteId = noteId;
     }
 
     public ParcelableNote(Note note) {
@@ -58,6 +61,7 @@ public class ParcelableNote implements Parcelable {
         dest.writeString(notebookGuid);
         dest.writeLong(created);
         dest.writeLong(updated);
+        dest.writeLong(noteId);
     }
 
     public static final Creator<ParcelableNote> CREATOR = new Parcelable.Creator<ParcelableNote>() {
@@ -130,5 +134,13 @@ public class ParcelableNote implements Parcelable {
 
     public void setUpdated(long updated) {
         this.updated = updated;
+    }
+
+    public long getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(long noteId) {
+        this.noteId = noteId;
     }
 }
