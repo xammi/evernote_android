@@ -310,7 +310,8 @@ public class MainActivity extends ActionBarActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
-                if (mService.insertNotebook(notebookName)) {
+                long id = mService.insertNotebook(notebookName);
+                if (id > 0) {
                     inflateSidebar();
                     Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
                 }

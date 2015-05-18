@@ -42,7 +42,13 @@ public class DBConverter {
 
         contentValues.put(Notes.NOTEBOOKS_GUID, note.getNotebookGuid());
         contentValues.put(Notebooks.GUID, note.getGuid());
-        contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
+
+        if (note.getDeleted() == 0) {
+            contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
+        }
+        else {
+            contentValues.put(Notes.STATE_DELETED, StateDeleted.TRUE.ordinal());
+        }
 
         contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
         return contentValues;

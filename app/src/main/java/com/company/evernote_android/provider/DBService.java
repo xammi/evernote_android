@@ -167,14 +167,28 @@ public class DBService extends Service implements ClientAPI {
     @Override
     public boolean deleteNotebook(long notebookId) {
         String WHERE_ID = Notebooks._ID + "=" + ((Long) notebookId).toString();
-        int result = getContentResolver().delete(Notebooks.CONTENT_URI, WHERE_ID, null);
+
+        ContentValues contentValues = new ContentValues();
+        Long currentTime = new Date().getTime();
+        contentValues.put(Notebooks.UPDATED, currentTime);
+        contentValues.put(Notebooks.STATE_DELETED, StateDeleted.TRUE.ordinal());
+        contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
+
+        int result = getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
     public boolean deleteNote(long noteId) {
         String WHERE_ID = Notebooks._ID + "=" + ((Long) noteId).toString();
-        int result = getContentResolver().delete(Notes.CONTENT_URI, WHERE_ID, null);
+
+        ContentValues contentValues = new ContentValues();
+        Long currentTime = new Date().getTime();
+        contentValues.put(Notes.UPDATED, currentTime);
+        contentValues.put(Notes.STATE_DELETED, StateDeleted.TRUE.ordinal());
+        contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
+
+        int result = getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 }
