@@ -46,23 +46,6 @@ public class NotebookProcessor {
 
                 if (statusCode == StatusCode.OK) {
                     for (Notebook notebook : notebooks) {
-
-                        // по сути тут должна быть синхронизация
-
-                        // TODO если такой блокнот есть уже в базе проверяем
-                        // TODO 1) надо ли обновить -> обновляем (это для заметок) 2) ставим какой-нибудь флаг (checked=true), что проверили сейчас этот блокнот
-                        // TODO 3) если у блокнота в базе sync = true -> делаем sync = false 4) ставим какой-нибудь флаг (checked=true), что проверили сейчас этот блокнот
-                        // TODO 5) если у блокнота в базе sync = false -> и обновлять не надо, то просто ставим какой-нибудь флаг (checked=true), что проверили сейчас этот блокнот
-
-                        // TODO если такого  блокнота нету в базе
-                        // TODO просто вставляем, sync=false, checked=true
-
-                        // TODO Далее смотрим все блокноты в базе, у которых checked=false и sync=false, если находим - удаляем такие блокноты
-
-                        // TODo Синхронизация закончена, выставляем у всех в базе cheched=false
-
-                        // PS это первое  что пришло в голову, если придумаешь лучше - welcome
-
                         ContentValues contentValues = DBConverter.notebookToValues(notebook);
                         context.getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
                     }

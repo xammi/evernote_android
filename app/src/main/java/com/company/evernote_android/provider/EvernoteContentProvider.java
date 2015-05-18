@@ -105,7 +105,7 @@ public class EvernoteContentProvider extends ContentProvider {
         }
 
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
-        Uri result;
+        Uri result = null;
         try {
             long id = dbConnection.insertOrThrow(tableName, null, values);
             result = ContentUris.withAppendedId(getContentUri(uri), id);
@@ -114,8 +114,13 @@ public class EvernoteContentProvider extends ContentProvider {
         catch (SQLException e) {
             String WHERE_ID = General.GUID + "='" + values.getAsString(General.GUID) + "'";
             int updated = dbConnection.update(tableName, values, WHERE_ID, null);
-            // TODO: not much time to implement all staff
-            result = ContentUris.withAppendedId(getContentUri(uri), 0);
+
+            if (updated > 0) {
+                Cursor cursor = query(getContentUri(uri), new String[]{General._ID}, WHERE_ID, null, null);
+                cursor.moveToNext();
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(General._ID));
+                result = ContentUris.withAppendedId(getContentUri(uri), id);
+            }
         }
         return result;
     }

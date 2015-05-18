@@ -109,7 +109,7 @@ public class DBService extends Service implements ClientAPI {
     }
 
     @Override
-    public boolean insertNotebook(String name) {
+    public long insertNotebook(String name) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notebooks.NAME, name);
@@ -118,11 +118,11 @@ public class DBService extends Service implements ClientAPI {
         contentValues.put(Notebooks.STATE_DELETED, StateDeleted.FALSE.ordinal());
         contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
         Uri result = getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
-        return result != null;
+        return Long.parseLong(result.getLastPathSegment());
     }
 
     @Override
-    public boolean insertNote(String title, String content, long notebookId) {
+    public long insertNote(String title, String content, long notebookId) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
         contentValues.put(Notes.TITLE, title);
@@ -133,7 +133,7 @@ public class DBService extends Service implements ClientAPI {
         contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
         contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
         Uri result = getContentResolver().insert(Notes.CONTENT_URI, contentValues);
-        return result != null;
+        return Long.parseLong(result.getLastPathSegment());
     }
 
     @Override

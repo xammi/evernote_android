@@ -78,7 +78,6 @@ public class NoteProcessor {
                 }
 
                 processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTE);
-
             }
         };
         return callback;
@@ -116,7 +115,6 @@ public class NoteProcessor {
                 }
 
                 processorCallback.send(statusCode, EvernoteService.TYPE_DELETE_NOTE);
-
             }
         };
         return callback;
