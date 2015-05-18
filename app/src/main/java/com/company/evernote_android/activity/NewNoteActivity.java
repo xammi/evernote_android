@@ -28,10 +28,10 @@ import com.company.evernote_android.provider.DBService;
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
 import com.company.evernote_android.sync.EvernoteServiceHelper;
+import com.company.evernote_android.utils.ParcelableNote;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteUtil;
-import com.evernote.edam.type.Note;
-import com.evernote.edam.type.Notebook;
+
 
 
 public class NewNoteActivity extends ActionBarActivity {
@@ -127,8 +127,8 @@ public class NewNoteActivity extends ActionBarActivity {
 
         String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
         long created = System.currentTimeMillis();
-
-        saveNoteRequestId = evernoteServiceHelper.saveNote(title.trim(), noteContent, notebookGuid, created);
+        ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created);
+        saveNoteRequestId = evernoteServiceHelper.saveNote(parcelableNote);
 
 //        if (result) {
 //            Log.d(LOGTAG, "Note was saved");

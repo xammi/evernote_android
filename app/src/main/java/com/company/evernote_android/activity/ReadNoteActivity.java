@@ -97,6 +97,12 @@ public class ReadNoteActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
+
     private void inflateNote() {
         mNote = mService.getNote(noteId);
 

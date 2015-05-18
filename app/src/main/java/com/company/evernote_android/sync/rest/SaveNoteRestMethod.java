@@ -17,13 +17,7 @@ public class SaveNoteRestMethod {
     public SaveNoteRestMethod() {
     }
 
-    public static void execute(final SaveNoteCallback callback, final EvernoteSession mEvernoteSession, String title, String content, String notebookGuid, long created) {
-
-        Note note = new Note();
-        note.setTitle(title);
-        note.setContent(content);
-        note.setNotebookGuid(notebookGuid);
-        note.setCreated(created);
+    public static void execute(final SaveNoteCallback callback, final EvernoteSession mEvernoteSession, Note note) {
 
         if (mEvernoteSession.isLoggedIn()) {
             try {

@@ -34,8 +34,8 @@ public class NoteProcessor {
         GetNotesRestMethod.execute(makeGetNotesCallback(), session, maxNotes);
     }
 
-    public void  saveNote(EvernoteSession session, String title, String content, String notebookGuid, long created) {
-        SaveNoteRestMethod.execute(makeSaveNoteCallback(), session, title, content, notebookGuid, created);
+    public void  saveNote(EvernoteSession session, Note note) {
+        SaveNoteRestMethod.execute(makeSaveNoteCallback(), session, note);
     }
 
     private GetNotesCallback makeGetNotesCallback() {

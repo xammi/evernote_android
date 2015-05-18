@@ -10,6 +10,7 @@ import com.company.evernote_android.sync.processor.NoteProcessor;
 import com.company.evernote_android.utils.EvernoteSessionConstant;
 import com.company.evernote_android.sync.processor.NotebookProcessor;
 import com.company.evernote_android.sync.processor.ProcessorCallback;
+import com.company.evernote_android.utils.ParcelableNote;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.Note;
 
@@ -62,12 +63,9 @@ public class EvernoteService extends IntentService {
                 notebookProcessor = new NotebookProcessor(getApplicationContext(), makeProcessorCallback());
                 notebookProcessor.saveNotebook(mEvernoteSession, notebookName);
             case TYPE_SAVE_NOTE:
-                String title = intent.getStringExtra("title");
-                String content = intent.getStringExtra("content");
-                String notebookGuid = intent.getStringExtra("notebookGuid");
-                long created = intent.getLongExtra("created", 0);
+                ParcelableNote parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");
                 noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
-                noteProcessor.saveNote(mEvernoteSession, title, content, notebookGuid, created);
+                noteProcessor.saveNote(mEvernoteSession, parcelableNote.toNote());
                 break;
         }
 

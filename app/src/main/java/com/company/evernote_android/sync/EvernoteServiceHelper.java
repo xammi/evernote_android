@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
+import com.company.evernote_android.utils.ParcelableNote;
 import com.evernote.edam.type.Note;
 
 import java.util.HashMap;
@@ -82,7 +83,7 @@ public class EvernoteServiceHelper {
         return result.getRequestId();
     }
 
-    public long saveNote(String title, String content, String notebookGuid, long created) {
+    public long saveNote(ParcelableNote parcelableNote) {
         Result result = makeRequest(EvernoteService.TYPE_SAVE_NOTE);
 
         if (result.isPending()) {
@@ -90,10 +91,7 @@ public class EvernoteServiceHelper {
         }
 
         Intent intent = result.getIntent();
-        intent.putExtra("title", title);
-        intent.putExtra("content", content);
-        intent.putExtra("notebookGuid", notebookGuid);
-        intent.putExtra("created", created);
+        intent.putExtra("parcelableNote", parcelableNote);
         context.startService(intent);
 
         return result.getRequestId();
