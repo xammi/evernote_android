@@ -104,27 +104,7 @@ public class MainActivity extends ActionBarActivity {
 
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
         //syncNotebooksAndNotes();
-
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
-                int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
-
-                //inflateSidebar(); тут не дожно быть, переместил ниже под условие
-
-                if (showSyncMessageFlag && resultRequestId == notebooksRequestId) {
-                    showToast(resultCode, "Синхронизация блокнотов прошла успешно", "Ошибка при синхронизации блокнотов");
-                } else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
-                    showToast(resultCode, "Синхронизация заметок прошла успешно", "Ошибка при синхронизации заметок");
-                } else if (resultRequestId == saveNotebookRequestId) {
-                    inflateSidebar();
-                    showToast(resultCode, "Блокнот успешно сохранен", "Ошибка при сохранении блокнота");
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
-        registerReceiver(broadcastReceiver, filter);
+        registerBroadcastReceiver();
 
         FAB = (ImageButton) findViewById(R.id.imageButton);
         FAB.setOnClickListener(new View.OnClickListener() {
@@ -355,9 +335,33 @@ public class MainActivity extends ActionBarActivity {
         notesRequestId = evernoteServiceHelper.getAllNotes(100);
     }
 
+    private void registerBroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+                int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
-    private void showToast(int statusCode, String messageOk, String messageError) {
-        String message;
+                //inflateSidebar(); тут не дожно быть, переместил ниже под условие
+
+                if (showSyncMessageFlag && resultRequestId == notebooksRequestId) {
+                    showToast(resultCode, R.string.sync_notebooks_ok, R.string.sync_notes_error);
+                } else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
+                    showToast(resultCode, R.string.sync_notes_ok, R.string.sync_notes_error);
+                } else if (resultRequestId == saveNotebookRequestId) {
+                    inflateSidebar();
+                    showToast(resultCode, R.string.notebook_created, R.string.error_create_notebook);
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
+    }
+
+
+    private void showToast(int statusCode, int messageOk, int messageError) {
+        int message;
         if (statusCode == StatusCode.OK) {
             message = messageOk;
         } else {

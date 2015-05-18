@@ -83,7 +83,7 @@ public class EvernoteServiceHelper {
     }
 
     public long saveNote(String title, String content, String notebookGuid, long created) {
-        Result result = makeRequest(EvernoteService.TYPE_SAVE_NOTEBOOK);
+        Result result = makeRequest(EvernoteService.TYPE_SAVE_NOTE);
 
         if (result.isPending()) {
             return result.getRequestId();

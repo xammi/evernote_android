@@ -39,7 +39,7 @@ public class SaveNoteRestMethod {
                     }
                 });
             } catch (TTransportException exception) {
-                Log.e(LOGTAG, "saveNotebook exception:", exception);
+                Log.e(LOGTAG, "saveNote exception:", exception);
             }
         }
     }

@@ -1,8 +1,10 @@
 package com.company.evernote_android.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +21,7 @@ import com.company.evernote_android.R;
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
+import com.company.evernote_android.sync.EvernoteServiceHelper;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
@@ -32,6 +35,7 @@ public class ReadNoteActivity extends ActionBarActivity {
     private long noteId;
     private Note mNote = null;
     private ClientAPI mService;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,11 @@ public class ReadNoteActivity extends ActionBarActivity {
         });
 
         noteId = getIntent().getLongExtra(NotesFragment.NOTE_ID_KEY, 0);
+
+        registerBroadcastReceiver();
+
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -99,7 +108,7 @@ public class ReadNoteActivity extends ActionBarActivity {
             contentView.setText(mNote.getContent());
 
             TextView dateView = (TextView) findViewById(R.id.date);
-            dateView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(mNote.getUpdated())).toString());
+            dateView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(mNote.getUpdated())));
 
             Notebook notebook = mService.getNotebook(mNote.getDeleted()); // feature
             TextView notebookView = (TextView) findViewById(R.id.notebook);
@@ -148,5 +157,19 @@ public class ReadNoteActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void registerBroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+                int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
+
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
     }
 }

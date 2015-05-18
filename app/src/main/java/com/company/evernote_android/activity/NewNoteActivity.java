@@ -1,10 +1,12 @@
 package com.company.evernote_android.activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import com.company.evernote_android.provider.DBService;
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
 import com.company.evernote_android.sync.EvernoteServiceHelper;
+import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
@@ -41,6 +44,8 @@ public class NewNoteActivity extends ActionBarActivity {
     protected long mSelectedNotebook = 1;
 
     private EvernoteServiceHelper evernoteServiceHelper;
+    private BroadcastReceiver broadcastReceiver;
+    private long saveNoteRequestId;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +69,7 @@ public class NewNoteActivity extends ActionBarActivity {
         mEditTextContent = (EditText) findViewById(R.id.text_content);
 
         evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
+        registerBroadcastReceiver();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -94,6 +100,12 @@ public class NewNoteActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
+
 
     public void saveNote(View view) {
         String title = mEditTextTitle.getText().toString();
@@ -116,7 +128,7 @@ public class NewNoteActivity extends ActionBarActivity {
         String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
         long created = System.currentTimeMillis();
 
-        evernoteServiceHelper.saveNote(title.trim(), noteContent, notebookGuid, created);
+        saveNoteRequestId = evernoteServiceHelper.saveNote(title.trim(), noteContent, notebookGuid, created);
 
 //        if (result) {
 //            Log.d(LOGTAG, "Note was saved");
@@ -198,5 +210,34 @@ public class NewNoteActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void registerBroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+                int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
+
+                if (resultRequestId == saveNoteRequestId) {
+                    showToast(resultCode, R.string.note_saved, R.string.error_saving_note);
+                }
+
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
+    }
+
+    private void showToast(int statusCode, int messageOk, int messageError) {
+        int message;
+        if (statusCode == StatusCode.OK) {
+            message = messageOk;
+        } else {
+            message = messageError;
+        }
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

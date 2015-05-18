@@ -58,6 +58,11 @@
     <string name="search_hint">Искать</string>
     <string name="notebook_created">Блокнот создан</string>
 
+    <string name="sync_notebooks_ok">Блокноты синхронизировались</string>
+    <string name="sync_notebooks_error">Ошибка синхронизации блокнотов</string>
+    <string name="sync_notes_ok">Заметки синхронизировались</string>
+    <string name="sync_notes_error">Ошибка синхронизации заметок</string>
+
     <string name="empty_content_error">Все поля обязательны</string>
     <string name="err_creating_note">Ошибка создания заметки</string>
     <string name="err_creating_notebook">Ошибка создания блокнота</string>
