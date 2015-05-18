@@ -38,8 +38,8 @@ public class NoteProcessor {
         GetNotesRestMethod.execute(makeGetNotesCallback(), session, maxNotes);
     }
 
-    public void  saveNote(EvernoteSession session, Note note) {
-        SaveNoteRestMethod.execute(makeSaveNoteCallback(), session, note);
+    public void  saveNote(EvernoteSession session, Note note, long noteId) {
+        SaveNoteRestMethod.execute(makeSaveNoteCallback(), session, note, noteId);
     }
 
     public void  updateNote(EvernoteSession session, Note note) {
@@ -69,8 +69,8 @@ public class NoteProcessor {
     private SendNoteCallback makeSaveNoteCallback() {
         SendNoteCallback callback = new SendNoteCallback() {
             @Override
-            public void sendNote(Note note, int statusCode) {
-
+            public void sendNote(Note note, int statusCode, long noteId) {
+                // TODO id
                 // TODO обновить, sync = false
                 if (statusCode == StatusCode.OK) {
                     // save Note in ContentProvide
@@ -86,7 +86,9 @@ public class NoteProcessor {
     private SendNoteCallback makeUpdateNoteCallback() {
         SendNoteCallback callback = new SendNoteCallback() {
             @Override
-            public void sendNote(Note note, int statusCode) {
+            public void sendNote(Note note, int statusCode, long noteId) {
+
+                // TODO обновить, sync = false
                 if (statusCode == StatusCode.OK) {
                     ContentValues contentValues = new ContentValues();
                     Long currentTime = new Date().getTime();

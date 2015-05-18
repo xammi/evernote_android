@@ -25,12 +25,12 @@ public class UpdateNoteRestMethod {
                 mEvernoteSession.getClientFactory().createNoteStoreClient().updateNote(note, new OnClientCallback<Note>() {
                     @Override
                     public void onSuccess(Note data) {
-                        callback.sendNote(data, StatusCode.OK);
+                        callback.sendNote(data, StatusCode.OK, 0);
                     }
 
                     @Override
                     public void onException(Exception exception) {
-                        callback.sendNote(null, StatusCode.ERROR);
+                        callback.sendNote(null, StatusCode.ERROR, 0);
                     }
                 });
             } catch (TTransportException exception) {

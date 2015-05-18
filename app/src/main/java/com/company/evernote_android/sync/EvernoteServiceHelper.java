@@ -69,7 +69,7 @@ public class EvernoteServiceHelper {
         return result.getRequestId();
     }
 
-    public long saveNotebook(String notebookName) {
+    public long saveNotebook(String notebookName, long notebookId) {
         Result result = makeRequest(EvernoteService.TYPE_SAVE_NOTEBOOK);
 
         if (result.isPending()) {
@@ -78,6 +78,7 @@ public class EvernoteServiceHelper {
 
         Intent intent = result.getIntent();
         intent.putExtra("notebookName", notebookName);
+        intent.putExtra("notebookId", notebookId);
         context.startService(intent);
 
         return result.getRequestId();

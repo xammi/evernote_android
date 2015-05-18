@@ -34,8 +34,8 @@ public class NotebookProcessor {
         GetNotebooksRestMethod.execute(makeGetNotebooksCallback(), session);
     }
 
-    public void saveNotebook(EvernoteSession session, String notebookName) {
-        SaveNotebookRestMethod.execute(makeSaveNotebookCallback(), session, notebookName);
+    public void saveNotebook(EvernoteSession session, String notebookName, long notebookId) {
+        SaveNotebookRestMethod.execute(makeSaveNotebookCallback(), session, notebookName, notebookId);
 
     }
 
@@ -59,9 +59,10 @@ public class NotebookProcessor {
     private SendNotebookCallback makeSaveNotebookCallback() {
         SendNotebookCallback callback = new SendNotebookCallback() {
             @Override
-            public void sendNotebook(Notebook notebook, int statusCode) {
+            public void sendNotebook(Notebook notebook, int statusCode, long notebookId) {
 
                 if (statusCode == StatusCode.OK) {
+                    // TODO id
                     // TODO нужно только обновить, т.к. теперь он сохранен в активити + надо в активи поставить флаг sync=true, что блокнот не синронизирован, а тут это флаг сделать sync=false
                     ContentValues contentValues = DBConverter.notebookToValues(notebook);
                     context.getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
