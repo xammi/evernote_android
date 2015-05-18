@@ -31,7 +31,7 @@ import com.company.evernote_android.sync.EvernoteServiceHelper;
 import com.company.evernote_android.utils.ParcelableNote;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteUtil;
-
+import com.evernote.edam.type.Note;
 
 
 public class NewNoteActivity extends ActionBarActivity {
@@ -116,28 +116,30 @@ public class NewNoteActivity extends ActionBarActivity {
             return;
         }
 
-        //Note note = new Note();
-        //note.setTitle(title);
+        Note note = new Note();
+        note.setTitle(title);
 
         //TODO: line breaks need to be converted to render in ENML
-        //note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
         String noteContent = EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX;
+        note.setContent(noteContent);
 
-        //boolean result = mService.insertNote(title.trim(), content, mSelectedNotebook);
+        boolean result = mService.insertNote(title.trim(), content, mSelectedNotebook);
+
+        long created = System.currentTimeMillis();
+
+        if (result) {
+            Log.d(LOGTAG, "Note was saved");
+            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
+        }
+        else {
+            Log.d(LOGTAG, "Error saving note");
+            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
+        }
 
         String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
-        long created = System.currentTimeMillis();
         ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created);
         saveNoteRequestId = evernoteServiceHelper.saveNote(parcelableNote);
 
-//        if (result) {
-//            Log.d(LOGTAG, "Note was saved");
-//            Toast.makeText(getApplicationContext(), R.string.note_saved, Toast.LENGTH_LONG).show();
-//        }
-//        else {
-//            Log.d(LOGTAG, "Error saving note");
-//            Toast.makeText(getApplicationContext(), R.string.error_saving_note, Toast.LENGTH_LONG).show();
-//        }
     }
 
 
@@ -220,7 +222,7 @@ public class NewNoteActivity extends ActionBarActivity {
                 int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
                 if (resultRequestId == saveNoteRequestId) {
-                    showToast(resultCode, R.string.note_saved, R.string.error_saving_note);
+                    showToast(resultCode, R.string.sync_note, R.string.sync_error_note);
                 }
 
             }

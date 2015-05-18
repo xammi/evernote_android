@@ -30,6 +30,7 @@ public class EvernoteService extends IntentService {
     public static final String TYPE_SAVE_NOTEBOOK = "SAVE_NOTEBOOK";
     public static final String TYPE_SAVE_NOTE = "SAVE_NOTE";
     public static final String TYPE_UPDATE_NOTE = "UPDATE_NOTE";
+    public static final String TYPE_DELETE_NOTE = "DELETE_NOTE";
 
     private Map<String, Intent> requestIntent = new HashMap<>();
     private ResultReceiver requestCallback;
@@ -75,6 +76,11 @@ public class EvernoteService extends IntentService {
                 parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");
                 noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
                 noteProcessor.updateNote(mEvernoteSession, parcelableNote.toNote());
+                break;
+            case TYPE_DELETE_NOTE:
+                String guid = intent.getStringExtra("guid");
+                noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
+                noteProcessor.deleteNote(mEvernoteSession, guid);
                 break;
         }
 

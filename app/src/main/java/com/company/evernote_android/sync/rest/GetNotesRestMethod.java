@@ -90,7 +90,7 @@ public class GetNotesRestMethod {
 
     private static void getNotes(final NoteMetadata mNote) {
         try {
-            mEvernoteSession.getClientFactory().createNoteStoreClient().getNote(mNote.getGuid(), true, true, true, true, new OnClientCallback<Note>() {
+            mEvernoteSession.getClientFactory().createNoteStoreClient().getNote(mNote.getGuid(), true, false, false, false, new OnClientCallback<Note>() {
                 @Override
                 public void onSuccess(Note data) {
                     counterEnd.getAndAdd(1);

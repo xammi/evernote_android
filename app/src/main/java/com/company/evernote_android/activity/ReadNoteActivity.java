@@ -22,6 +22,7 @@ import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.company.evernote_android.provider.ClientAPI;
 import com.company.evernote_android.provider.DBService;
 import com.company.evernote_android.sync.EvernoteServiceHelper;
+import com.company.evernote_android.utils.StatusCode;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
@@ -35,7 +36,9 @@ public class ReadNoteActivity extends ActionBarActivity {
     private long noteId;
     private Note mNote = null;
     private ClientAPI mService;
+    private EvernoteServiceHelper evernoteServiceHelper;
     private BroadcastReceiver broadcastReceiver;
+    private long deleteNoteRequestId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +61,9 @@ public class ReadNoteActivity extends ActionBarActivity {
 
         noteId = getIntent().getLongExtra(NotesFragment.NOTE_ID_KEY, 0);
 
+        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
         registerBroadcastReceiver();
 
-        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
-        registerReceiver(broadcastReceiver, filter);
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -132,6 +134,8 @@ public class ReadNoteActivity extends ActionBarActivity {
     }
 
     private void deleteNote() {
+
+        // TODO нужно в базе сделать флаг state_deleting и  поставить тут state_deleting = true, удалять тут не нужно
         boolean deleted = mService.deleteNote(noteId);
         if (deleted) {
             finish();
@@ -139,6 +143,10 @@ public class ReadNoteActivity extends ActionBarActivity {
         else {
             Toast.makeText(ReadNoteActivity.this, R.string.error_deleting_note, Toast.LENGTH_SHORT).show();
         }
+
+        // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
+        deleteNoteRequestId = evernoteServiceHelper.deleteNote(mService.getNote(noteId).getGuid());
+
     }
 
     @Override
@@ -172,10 +180,25 @@ public class ReadNoteActivity extends ActionBarActivity {
                 long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
                 int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
+                if (resultRequestId == deleteNoteRequestId) {
+                    showToast(resultCode, R.string.sync_deleting_note, R.string.sync_error_deleting_note);
+                }
+
             }
         };
 
         IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
         registerReceiver(broadcastReceiver, filter);
+    }
+
+    private void showToast(int statusCode, int messageOk, int messageError) {
+        int message;
+        if (statusCode == StatusCode.OK) {
+            message = messageOk;
+        } else {
+            message = messageError;
+        }
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

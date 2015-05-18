@@ -19,6 +19,7 @@ import com.company.evernote_android.R;
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.company.evernote_android.provider.DBService;
 import com.company.evernote_android.sync.EvernoteServiceHelper;
+import com.company.evernote_android.utils.ParcelableNote;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.edam.type.Note;
@@ -77,6 +78,12 @@ public class EditNoteActivity extends NewNoteActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
+
     private void inflateNote() {
         mNote = mService.getNote(noteId);
 
@@ -119,6 +126,9 @@ public class EditNoteActivity extends NewNoteActivity {
             Log.d(LOGTAG, "Error saving updated");
             Toast.makeText(getApplicationContext(), R.string.error_updating_note, Toast.LENGTH_LONG).show();
         }
+
+        // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
+        updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote(mService.getNote(noteId)));
     }
 
     private void registerBroadcastReceiver() {
@@ -129,7 +139,7 @@ public class EditNoteActivity extends NewNoteActivity {
                 int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
 
                 if (resultRequestId == updateNoteRequestId) {
-                    showToast(resultCode, R.string.note_updated, R.string.error_updating_note);
+                    showToast(resultCode, R.string.sync_note, R.string.sync_error_note);
                 }
 
             }

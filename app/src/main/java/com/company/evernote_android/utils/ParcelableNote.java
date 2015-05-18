@@ -36,6 +36,15 @@ public class ParcelableNote implements Parcelable {
         this.created = created;
     }
 
+    public ParcelableNote(Note note) {
+        title = note.getTitle();
+        content = note.getContent();
+        guid = note.getGuid();
+        notebookGuid = note.getNotebookGuid();
+        created = note.getCreated();
+        updated = note.getUpdated();
+    }
+
     @Override
     public int describeContents() {
         return 0;

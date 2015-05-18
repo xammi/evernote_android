@@ -66,6 +66,9 @@
     <string name="sync_notebook_created">Блокнот синхронизирован</string>
     <string name="sync_note">Заметка синхронизирована</string>
 
+    <string name="sync_deleting_note">Удаление заметки синхронизировано</string>
+    <string name="sync_error_deleting_note">Удаление заметки не синхронизировано</string>
+
     <string name="sync_error_notebook_created">Блокнот не синхронизирован</string>
     <string name="sync_error_note">Заметка не синхронизирована</string>
 

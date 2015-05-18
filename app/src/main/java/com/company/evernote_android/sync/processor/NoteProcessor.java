@@ -7,7 +7,9 @@ import static com.company.evernote_android.provider.EvernoteContract.*;
 
 import com.company.evernote_android.provider.DBConverter;
 import com.company.evernote_android.sync.EvernoteService;
+import com.company.evernote_android.sync.rest.DeleteNoteRestMethod;
 import com.company.evernote_android.sync.rest.UpdateNoteRestMethod;
+import com.company.evernote_android.sync.rest.callback.SendDataDeleteNoteCallback;
 import com.company.evernote_android.sync.rest.callback.SendNotesCallback;
 import com.company.evernote_android.sync.rest.GetNotesRestMethod;
 import com.company.evernote_android.sync.rest.callback.SendNoteCallback;
@@ -40,7 +42,11 @@ public class NoteProcessor {
     }
 
     public void  updateNote(EvernoteSession session, Note note) {
-        UpdateNoteRestMethod.execute(makeSaveNoteCallback(), session, note);
+        UpdateNoteRestMethod.execute(makeUpdateNoteCallback(), session, note);
+    }
+
+    public void  deleteNote(EvernoteSession session, String guid) {
+        DeleteNoteRestMethod.execute(makeDeleteNoteCallback(), session, guid);
     }
 
     private SendNotesCallback makeGetNotesCallback() {
@@ -90,6 +96,26 @@ public class NoteProcessor {
                 }
 
                 processorCallback.send(statusCode, EvernoteService.TYPE_UPDATE_NOTE);
+
+            }
+        };
+        return callback;
+    }
+
+    private SendDataDeleteNoteCallback makeDeleteNoteCallback() {
+        SendDataDeleteNoteCallback callback = new SendDataDeleteNoteCallback() {
+            @Override
+            public void sendInteger(Integer data, String guid, int statusCode) {
+                // data - The Update Sequence Number for this change within the account.
+
+                // TODO нужно в базе сделать флаг state_deleting, показывать только заметки, где state_deleting = false,
+                // TODO в активити при удалении нужно не удалть заметку, а ставить state_deleting = true, а вот тут уже удалять из базы
+                if (statusCode == StatusCode.OK) {
+                    // delete Note in ContentProvide
+
+                }
+
+                processorCallback.send(statusCode, EvernoteService.TYPE_DELETE_NOTE);
 
             }
         };

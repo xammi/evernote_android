@@ -46,6 +46,9 @@ public class NotebookProcessor {
 
                 if (statusCode == StatusCode.OK) {
                     for (Notebook notebook : notebooks) {
+
+                        // по сути тут должна быть синхронизация
+
                         // TODO если такой блокнот есть уже в базе проверяем
                         // TODO 1) надо ли обновить -> обновляем (это для заметок) 2) ставим какой-нибудь флаг (checked=true), что проверили сейчас этот блокнот
                         // TODO 3) если у блокнота в базе sync = true -> делаем sync = false 4) ставим какой-нибудь флаг (checked=true), что проверили сейчас этот блокнот
