@@ -97,6 +97,20 @@ public class EvernoteServiceHelper {
         return result.getRequestId();
     }
 
+    public long updateNote(ParcelableNote parcelableNote) {
+        Result result = makeRequest(EvernoteService.TYPE_UPDATE_NOTE);
+
+        if (result.isPending()) {
+            return result.getRequestId();
+        }
+
+        Intent intent = result.getIntent();
+        intent.putExtra("parcelableNote", parcelableNote);
+        context.startService(intent);
+
+        return result.getRequestId();
+    }
+
 
     private Result makeRequest(String type_request) {
 

@@ -2,7 +2,7 @@ package com.company.evernote_android.sync.rest;
 
 import android.util.Log;
 
-import com.company.evernote_android.utils.EvernoteSessionConstant;
+import com.company.evernote_android.sync.rest.callback.SendNotebooksCallback;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.OnClientCallback;
@@ -21,7 +21,7 @@ public class GetNotebooksRestMethod {
     public GetNotebooksRestMethod() {
     }
 
-    public static void execute(final GetNotebooksCallback callback, final EvernoteSession mEvernoteSession) {
+    public static void execute(final SendNotebooksCallback callback, final EvernoteSession mEvernoteSession) {
 
         if (mEvernoteSession.isLoggedIn()) {
             try {

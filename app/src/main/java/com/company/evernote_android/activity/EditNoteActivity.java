@@ -1,8 +1,10 @@
 package com.company.evernote_android.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -16,6 +18,8 @@ import android.widget.Toast;
 import com.company.evernote_android.R;
 import com.company.evernote_android.activity.main.fragments.NotesFragment;
 import com.company.evernote_android.provider.DBService;
+import com.company.evernote_android.sync.EvernoteServiceHelper;
+import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.edam.type.Note;
 
@@ -27,11 +31,17 @@ public class EditNoteActivity extends NewNoteActivity {
     private long noteId;
     private Note mNote = null;
 
+    private EvernoteServiceHelper evernoteServiceHelper;
+    private BroadcastReceiver broadcastReceiver;
+    private long updateNoteRequestId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_activity_edit_note);
         noteId = getIntent().getLongExtra(NotesFragment.NOTE_ID_KEY, 0);
+        evernoteServiceHelper = EvernoteServiceHelper.getInstance(this);
+        registerBroadcastReceiver();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -109,5 +119,34 @@ public class EditNoteActivity extends NewNoteActivity {
             Log.d(LOGTAG, "Error saving updated");
             Toast.makeText(getApplicationContext(), R.string.error_updating_note, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void registerBroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long resultRequestId = intent.getLongExtra(EvernoteServiceHelper.EXTRA_REQUEST_ID, -1);
+                int resultCode = intent.getIntExtra(EvernoteServiceHelper.EXTRA_RESULT_CODE, 0);
+
+                if (resultRequestId == updateNoteRequestId) {
+                    showToast(resultCode, R.string.note_updated, R.string.error_updating_note);
+                }
+
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(EvernoteServiceHelper.ACTION_REQUEST_RESULT);
+        registerReceiver(broadcastReceiver, filter);
+    }
+
+    private void showToast(int statusCode, int messageOk, int messageError) {
+        int message;
+        if (statusCode == StatusCode.OK) {
+            message = messageOk;
+        } else {
+            message = messageError;
+        }
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

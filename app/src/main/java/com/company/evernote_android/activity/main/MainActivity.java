@@ -310,7 +310,13 @@ public class MainActivity extends ActionBarActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String notebookName = edittext.getText().toString();
-//                mService.insertNotebook(notebookName);
+                if (mService.insertNotebook(notebookName)) {
+                    inflateSidebar();
+                    Toast.makeText(getApplicationContext(), R.string.notebook_created, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.err_creating_notebook, Toast.LENGTH_LONG).show();
+                }
                 saveNotebookRequestId = evernoteServiceHelper.saveNotebook(notebookName);
             }
         });
@@ -350,7 +356,7 @@ public class MainActivity extends ActionBarActivity {
                     showToast(resultCode, R.string.sync_notes_ok, R.string.sync_notes_error);
                 } else if (resultRequestId == saveNotebookRequestId) {
                     inflateSidebar();
-                    showToast(resultCode, R.string.notebook_created, R.string.error_create_notebook);
+                    showToast(resultCode, R.string.sync_notebook_created, R.string.sync_error_notebook_created);
                 }
             }
         };

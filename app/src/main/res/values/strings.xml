@@ -63,6 +63,13 @@
     <string name="sync_notes_ok">Заметки синхронизировались</string>
     <string name="sync_notes_error">Ошибка синхронизации заметок</string>
 
+    <string name="sync_notebook_created">Блокнот синхронизирован</string>
+    <string name="sync_note">Заметка синхронизирована</string>
+
+    <string name="sync_error_notebook_created">Блокнот не синхронизирован</string>
+    <string name="sync_error_note">Заметка не синхронизирована</string>
+
+
     <string name="empty_content_error">Все поля обязательны</string>
     <string name="err_creating_note">Ошибка создания заметки</string>
     <string name="err_creating_notebook">Ошибка создания блокнота</string>

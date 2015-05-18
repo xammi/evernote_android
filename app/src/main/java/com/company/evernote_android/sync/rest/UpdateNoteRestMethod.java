@@ -12,17 +12,17 @@ import com.evernote.thrift.transport.TTransportException;
 /**
  * Created by Zalman on 18.05.2015.
  */
-public class SaveNoteRestMethod {
-    private static String LOGTAG = "SaveNoteRestMethod: ";
+public class UpdateNoteRestMethod {
+    private static String LOGTAG = "UpdateNoteRestMethod: ";
 
-    public SaveNoteRestMethod() {
+    public UpdateNoteRestMethod() {
     }
 
     public static void execute(final SendNoteCallback callback, final EvernoteSession mEvernoteSession, Note note) {
 
         if (mEvernoteSession.isLoggedIn()) {
             try {
-                mEvernoteSession.getClientFactory().createNoteStoreClient().createNote(note, new OnClientCallback<Note>() {
+                mEvernoteSession.getClientFactory().createNoteStoreClient().updateNote(note, new OnClientCallback<Note>() {
                     @Override
                     public void onSuccess(Note data) {
                         callback.sendNote(data, StatusCode.OK);
@@ -34,7 +34,7 @@ public class SaveNoteRestMethod {
                     }
                 });
             } catch (TTransportException exception) {
-                Log.e(LOGTAG, "saveNote exception:", exception);
+                Log.e(LOGTAG, "updateNote exception:", exception);
             }
         }
     }

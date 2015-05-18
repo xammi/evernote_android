@@ -2,6 +2,7 @@ package com.company.evernote_android.sync.rest;
 
 import android.util.Log;
 
+import com.company.evernote_android.sync.rest.callback.SendNotesCallback;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.OnClientCallback;
@@ -25,14 +26,14 @@ public class GetNotesRestMethod {
     private static String LOGTAG = "GetNotesRestMethod: ";
     private static AtomicInteger counterEnd = new AtomicInteger(0);
     private static AtomicInteger counterNotes = new AtomicInteger(0);
-    private static GetNotesCallback getNotebooksCallback;
+    private static SendNotesCallback getNotebooksCallback;
     private static EvernoteSession mEvernoteSession;
     private static ConcurrentLinkedQueue<Note> resultNotes = new ConcurrentLinkedQueue<>();
 
     public GetNotesRestMethod() {
     }
 
-    public static void execute(final GetNotesCallback callback, final EvernoteSession evernoteSession, final int maxNotes) {
+    public static void execute(final SendNotesCallback callback, final EvernoteSession evernoteSession, final int maxNotes) {
         getNotebooksCallback = callback;
         mEvernoteSession = evernoteSession;
 

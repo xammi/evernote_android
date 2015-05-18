@@ -29,6 +29,7 @@ public class EvernoteService extends IntentService {
     public static final String TYPE_GET_NOTEBOOKS = "GET_NOTEBOOKS";
     public static final String TYPE_SAVE_NOTEBOOK = "SAVE_NOTEBOOK";
     public static final String TYPE_SAVE_NOTE = "SAVE_NOTE";
+    public static final String TYPE_UPDATE_NOTE = "UPDATE_NOTE";
 
     private Map<String, Intent> requestIntent = new HashMap<>();
     private ResultReceiver requestCallback;
@@ -47,6 +48,8 @@ public class EvernoteService extends IntentService {
         EvernoteSession mEvernoteSession = EvernoteSessionConstant.getSession(this);
         NotebookProcessor notebookProcessor;
         NoteProcessor noteProcessor;
+        ParcelableNote parcelableNote;
+
         switch (requestType) {
 
             case TYPE_GET_NOTEBOOKS:
@@ -62,10 +65,16 @@ public class EvernoteService extends IntentService {
                 String notebookName = intent.getStringExtra("notebookName");
                 notebookProcessor = new NotebookProcessor(getApplicationContext(), makeProcessorCallback());
                 notebookProcessor.saveNotebook(mEvernoteSession, notebookName);
+                break;
             case TYPE_SAVE_NOTE:
-                ParcelableNote parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");
+                parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");
                 noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
                 noteProcessor.saveNote(mEvernoteSession, parcelableNote.toNote());
+                break;
+            case TYPE_UPDATE_NOTE:
+                parcelableNote = (ParcelableNote)intent.getParcelableExtra("parcelableNote");
+                noteProcessor = new NoteProcessor(getApplicationContext(), makeProcessorCallback());
+                noteProcessor.updateNote(mEvernoteSession, parcelableNote.toNote());
                 break;
         }
 

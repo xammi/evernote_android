@@ -2,13 +2,12 @@ package com.company.evernote_android.sync.rest;
 
 import android.util.Log;
 
+import com.company.evernote_android.sync.rest.callback.SendNotebookCallback;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.OnClientCallback;
 import com.evernote.edam.type.Notebook;
 import com.evernote.thrift.transport.TTransportException;
-
-import java.util.List;
 
 /**
  * Created by Zalman on 17.05.2015.
@@ -20,7 +19,7 @@ public class SaveNotebookRestMethod {
     public SaveNotebookRestMethod() {
     }
 
-    public static void execute(final SaveNotebookCallback callback, final EvernoteSession mEvernoteSession, String notebookName) {
+    public static void execute(final SendNotebookCallback callback, final EvernoteSession mEvernoteSession, String notebookName) {
 
         final Notebook notebook = new Notebook();
         notebook.setName(notebookName);

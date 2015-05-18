@@ -7,9 +7,10 @@ import static com.company.evernote_android.provider.EvernoteContract.*;
 
 import com.company.evernote_android.provider.DBConverter;
 import com.company.evernote_android.sync.EvernoteService;
-import com.company.evernote_android.sync.rest.GetNotesCallback;
+import com.company.evernote_android.sync.rest.UpdateNoteRestMethod;
+import com.company.evernote_android.sync.rest.callback.SendNotesCallback;
 import com.company.evernote_android.sync.rest.GetNotesRestMethod;
-import com.company.evernote_android.sync.rest.SaveNoteCallback;
+import com.company.evernote_android.sync.rest.callback.SendNoteCallback;
 import com.company.evernote_android.sync.rest.SaveNoteRestMethod;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
@@ -38,11 +39,15 @@ public class NoteProcessor {
         SaveNoteRestMethod.execute(makeSaveNoteCallback(), session, note);
     }
 
-    private GetNotesCallback makeGetNotesCallback() {
-        GetNotesCallback callback = new GetNotesCallback() {
+    public void  updateNote(EvernoteSession session, Note note) {
+        UpdateNoteRestMethod.execute(makeSaveNoteCallback(), session, note);
+    }
+
+    private SendNotesCallback makeGetNotesCallback() {
+        SendNotesCallback callback = new SendNotesCallback() {
             @Override
             public void sendNotes(ConcurrentLinkedQueue<Note> notes, int statusCode) {
-
+                // TODO нужно сделать нормальну синхронизацию, как для блокнотов
                 if (statusCode == StatusCode.OK) {
                     for (Note note : notes) {
                         ContentValues contentValues = DBConverter.noteToValues(note);
@@ -55,17 +60,36 @@ public class NoteProcessor {
         return callback;
     }
 
-    private SaveNoteCallback makeSaveNoteCallback() {
-        SaveNoteCallback callback = new SaveNoteCallback() {
+    private SendNoteCallback makeSaveNoteCallback() {
+        SendNoteCallback callback = new SendNoteCallback() {
             @Override
             public void sendNote(Note note, int statusCode) {
 
+                // TODO обновить, sync = false
+                if (statusCode == StatusCode.OK) {
+                    // save Note in ContentProvide
+
+                }
+
+                processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTE);
+
+            }
+        };
+        return callback;
+    }
+
+    private SendNoteCallback makeUpdateNoteCallback() {
+        SendNoteCallback callback = new SendNoteCallback() {
+            @Override
+            public void sendNote(Note note, int statusCode) {
+
+                // TODO обновить, sync = false
                 if (statusCode == StatusCode.OK) {
                     // update Note in ContentProvide
 
                 }
 
-                processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTE);
+                processorCallback.send(statusCode, EvernoteService.TYPE_UPDATE_NOTE);
 
             }
         };
