@@ -18,6 +18,7 @@ import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.Note;
 
+import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -53,7 +54,6 @@ public class NoteProcessor {
         SendNotesCallback callback = new SendNotesCallback() {
             @Override
             public void sendNotes(ConcurrentLinkedQueue<Note> notes, int statusCode) {
-                // TODO нужно сделать нормальну синхронизацию, как для блокнотов
                 if (statusCode == StatusCode.OK) {
                     for (Note note : notes) {
                         ContentValues contentValues = DBConverter.noteToValues(note);
@@ -87,15 +87,18 @@ public class NoteProcessor {
         SendNoteCallback callback = new SendNoteCallback() {
             @Override
             public void sendNote(Note note, int statusCode) {
-
-                // TODO обновить, sync = false
                 if (statusCode == StatusCode.OK) {
-                    // update Note in ContentProvide
+                    ContentValues contentValues = new ContentValues();
+                    Long currentTime = new Date().getTime();
 
+                    contentValues.put(Notes.UPDATED, currentTime);
+                    contentValues.put(Notes.GUID, note.getGuid());
+                    contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
+
+                    String WHERE_ID = Notes.GUID + "=" + note.getGuid();
+                    context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
-
                 processorCallback.send(statusCode, EvernoteService.TYPE_UPDATE_NOTE);
-
             }
         };
         return callback;
@@ -107,13 +110,17 @@ public class NoteProcessor {
             public void sendInteger(Integer data, String guid, int statusCode) {
                 // data - The Update Sequence Number for this change within the account.
 
-                // TODO нужно в базе сделать флаг state_deleting, показывать только заметки, где state_deleting = false,
-                // TODO в активити при удалении нужно не удалть заметку, а ставить state_deleting = true, а вот тут уже удалять из базы
                 if (statusCode == StatusCode.OK) {
-                    // delete Note in ContentProvide
+                    ContentValues contentValues = new ContentValues();
+                    Long currentTime = new Date().getTime();
+
+                    contentValues.put(Notes.UPDATED, currentTime);
+                    contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
+
+                    String WHERE_ID = Notes.GUID + "=" + guid;
+                    context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
 
                 }
-
                 processorCallback.send(statusCode, EvernoteService.TYPE_DELETE_NOTE);
             }
         };
