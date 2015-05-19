@@ -18,11 +18,14 @@ import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
 public class DBService extends Service implements ClientAPI {
     private final IBinder mBinder = new DBWriteBinder();
+
+    private static final AtomicLong NOTE_GUID_COUNTER = new AtomicLong();
 
     public DBService() {}
 
@@ -45,8 +48,37 @@ public class DBService extends Service implements ClientAPI {
                 Notebooks.ALL_COLUMNS_PROJECTION,
                 NOT_DELETED_SELECTION,
                 null,
-                Notes.UPDATED + " DESC");
+                Notebooks.UPDATED + " DESC");
         return cursor;
+    }
+
+    @Override
+    public Cursor getUnsyncedNotebooks() {
+        String SELECTION = Notebooks.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal() +
+                " AND " + Notebooks.STATE_SYNC_REQUIRED + "=" + StateSyncRequired.PENDING.ordinal();
+
+        Cursor cursor = getContentResolver().query(
+                Notebooks.CONTENT_URI,
+                Notebooks.ALL_COLUMNS_PROJECTION,
+                SELECTION,
+                null,
+                Notebooks.UPDATED + " ASC");
+        return cursor;
+    }
+
+    @Override
+    public Cursor getUnsyncedNotes() {
+        String SELECTION = Notes.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal() +
+                " AND " + Notes.STATE_SYNC_REQUIRED + "=" + StateSyncRequired.PENDING.ordinal();
+
+        Cursor cursor = getContentResolver().query(
+                Notes.CONTENT_URI,
+                Notes.ALL_COLUMNS_PROJECTION,
+                SELECTION,
+                null,
+                Notes.UPDATED + " ASC");
+        return cursor;
+
     }
 
     @Override
@@ -54,8 +86,8 @@ public class DBService extends Service implements ClientAPI {
         String selection = Notes.STATE_DELETED + "=" + StateDeleted.FALSE.ordinal()
                 + " AND " + Notes.NOTEBOOKS_ID + "=" + ((Long) notebookId).toString();
         Cursor cursor = getContentResolver().query(
-                Notebooks.CONTENT_URI,
-                Notebooks.ALL_COLUMNS_PROJECTION,
+                Notes.CONTENT_URI,
+                Notes.ALL_COLUMNS_PROJECTION,
                 selection,
                 null,
                 Notes.UPDATED + " DESC");
@@ -111,56 +143,46 @@ public class DBService extends Service implements ClientAPI {
 
     @Override
     public long insertNotebook(String name) throws SQLException {
-        ContentValues contentValues = new ContentValues();
-        Long currentTime = new Date().getTime();
+        ContentValues contentValues = DBConverter.prepareNewInsert(StateSyncRequired.PENDING);
         contentValues.put(Notebooks.NAME, name);
-        contentValues.put(Notebooks.CREATED, currentTime);
-        contentValues.put(Notebooks.UPDATED, currentTime);
-        contentValues.put(Notebooks.STATE_DELETED, StateDeleted.FALSE.ordinal());
-        contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
+
         Uri result = getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
         return Long.parseLong(result.getLastPathSegment());
     }
 
     @Override
     public long insertNote(String title, String content, long notebookId) throws SQLException {
-        ContentValues contentValues = new ContentValues();
-        Long currentTime = new Date().getTime();
+        ContentValues contentValues = DBConverter.prepareNewInsert(StateSyncRequired.PENDING);
+
         contentValues.put(Notes.TITLE, title);
         contentValues.put(Notes.CONTENT, content);
-        contentValues.put(Notes.CREATED, currentTime);
-        contentValues.put(Notes.UPDATED, currentTime);
         contentValues.put(Notes.NOTEBOOKS_ID, notebookId);
-        contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
-        contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
+        // contentValues.put(Notes.GUID, ((Long) NOTE_GUID_COUNTER.getAndIncrement()).toString());
+
         Uri result = getContentResolver().insert(Notes.CONTENT_URI, contentValues);
         return Long.parseLong(result.getLastPathSegment());
     }
 
     @Override
     public boolean updateNotebook(long notebookId, String name) {
-        ContentValues contentValues = new ContentValues();
-        Long currentTime = new Date().getTime();
-        contentValues.put(Notebooks.NAME, name);
-        contentValues.put(Notebooks.UPDATED, currentTime);
-        contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
-
         String WHERE_ID = Notebooks._ID + "=" + ((Long) notebookId).toString();
+
+        ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.PENDING);
+        contentValues.put(Notebooks.NAME, name);
+
         int result = getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
 
     @Override
     public boolean updateNote(long noteId, String title, String content, long notebookId) {
-        ContentValues contentValues = new ContentValues();
-        Long currentTime = new Date().getTime();
+        String WHERE_ID = Notes._ID + "=" + ((Long) noteId).toString();
+
+        ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.PENDING);
         contentValues.put(Notes.TITLE, title);
         contentValues.put(Notes.CONTENT, content);
-        contentValues.put(Notes.UPDATED, currentTime);
         contentValues.put(Notes.NOTEBOOKS_ID, notebookId);
-        contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
 
-        String WHERE_ID = Notes._ID + "=" + ((Long) noteId).toString();
         int result = getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
     }
@@ -169,11 +191,8 @@ public class DBService extends Service implements ClientAPI {
     public boolean deleteNotebook(long notebookId) {
         String WHERE_ID = Notebooks._ID + "=" + ((Long) notebookId).toString();
 
-        ContentValues contentValues = new ContentValues();
-        Long currentTime = new Date().getTime();
-        contentValues.put(Notebooks.UPDATED, currentTime);
+        ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.PENDING);
         contentValues.put(Notebooks.STATE_DELETED, StateDeleted.TRUE.ordinal());
-        contentValues.put(Notebooks.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
 
         int result = getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;
@@ -183,11 +202,8 @@ public class DBService extends Service implements ClientAPI {
     public boolean deleteNote(long noteId) {
         String WHERE_ID = Notebooks._ID + "=" + ((Long) noteId).toString();
 
-        ContentValues contentValues = new ContentValues();
-        Long currentTime = new Date().getTime();
-        contentValues.put(Notes.UPDATED, currentTime);
+        ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.PENDING);
         contentValues.put(Notes.STATE_DELETED, StateDeleted.TRUE.ordinal());
-        contentValues.put(Notes.STATE_SYNC_REQUIRED, StateSyncRequired.PENDING.ordinal());
 
         int result = getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
         return result != 0;

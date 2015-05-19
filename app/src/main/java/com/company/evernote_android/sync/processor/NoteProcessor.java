@@ -73,7 +73,7 @@ public class NoteProcessor {
             public void sendNote(Note note, int statusCode, long noteId) {
 
                 if (statusCode == StatusCode.OK) {
-                    ContentValues contentValues = DBConverter.prepareNewUpdate();
+                    ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
                     String WHERE_ID = Notes._ID + "=" + noteId;
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
@@ -89,7 +89,7 @@ public class NoteProcessor {
             public void sendNote(Note note, int statusCode, long noteId) {
 
                 if (statusCode == StatusCode.OK) {
-                    ContentValues contentValues = DBConverter.prepareNewUpdate();
+                    ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
                     contentValues.put(Notes.GUID, note.getGuid());
                     String WHERE_ID = Notes.GUID + "=" + note.getGuid();
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
@@ -107,7 +107,7 @@ public class NoteProcessor {
                 // data - The Update Sequence Number for this change within the account.
 
                 if (statusCode == StatusCode.OK) {
-                    ContentValues contentValues = DBConverter.prepareNewUpdate();
+                    ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
                     String WHERE_ID = Notes.GUID + "=" + guid;
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
 
@@ -117,5 +117,4 @@ public class NoteProcessor {
         };
         return callback;
     }
-
 }

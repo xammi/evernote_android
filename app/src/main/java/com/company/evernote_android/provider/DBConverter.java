@@ -55,11 +55,24 @@ public class DBConverter {
         return contentValues;
     }
 
-    public static ContentValues prepareNewUpdate() {
+    public static ContentValues prepareNewUpdate(StateSyncRequired sync) {
         ContentValues contentValues = new ContentValues();
         Long currentTime = new Date().getTime();
+
         contentValues.put(General.UPDATED, currentTime);
-        contentValues.put(General.STATE_SYNC_REQUIRED, StateSyncRequired.SYNCED.ordinal());
+        contentValues.put(General.STATE_SYNC_REQUIRED, sync.ordinal());
+        return contentValues;
+    }
+
+    public static ContentValues prepareNewInsert(StateSyncRequired sync) {
+        ContentValues contentValues = new ContentValues();
+        Long currentTime = new Date().getTime();
+
+        contentValues.put(Notes.CREATED, currentTime);
+        contentValues.put(General.UPDATED, currentTime);
+        contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());
+        contentValues.put(General.STATE_SYNC_REQUIRED, sync.ordinal());
+
         return contentValues;
     }
 }

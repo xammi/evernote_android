@@ -98,6 +98,20 @@ public class EvernoteContentProvider extends ContentProvider {
         }
     }
 
+    private Long getNotebookByID(String ID) {
+        String WHERE_ID = Notebooks._ID + "='" + ID + "'";
+        Cursor cursor = query(Notebooks.CONTENT_URI, new String[]{Notebooks._ID}, WHERE_ID, null, null);
+        if (cursor == null || cursor.getCount() == 0) {
+            return null;
+        }
+        else {
+            cursor.moveToNext();
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(Notebooks._ID));
+            cursor.close();
+            return id;
+        }
+    }
+
     private Long getIdByWhere(Uri uri, String WHERE) {
         Cursor cursor = query(getContentUri(uri), new String[]{General._ID}, WHERE, null, null);
         cursor.moveToNext();
@@ -113,6 +127,11 @@ public class EvernoteContentProvider extends ContentProvider {
         if (values.containsKey(Notes.NOTEBOOKS_GUID) && !values.containsKey(Notes.NOTEBOOKS_ID)) {
             Long notebookId = getNotebookByGUID(values.getAsString(Notes.NOTEBOOKS_GUID));
             values.put(Notes.NOTEBOOKS_ID, notebookId);
+        }
+
+        if (!values.containsKey(Notes.NOTEBOOKS_GUID) && values.containsKey(Notes.NOTEBOOKS_ID)) {
+            Long notebookId = getNotebookByID(values.getAsString(Notes.NOTEBOOKS_ID));
+            values.put(Notes.NOTEBOOKS_GUID, notebookId);
         }
 
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();

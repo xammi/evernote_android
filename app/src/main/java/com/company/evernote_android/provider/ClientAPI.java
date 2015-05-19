@@ -13,6 +13,9 @@ public interface ClientAPI {
     Cursor getAllNotebooks();
     Cursor getNotesFor(long notebookId);
 
+    Cursor getUnsyncedNotebooks();
+    Cursor getUnsyncedNotes();
+
     Notebook getNotebook(long notebookId);
     Note getNote(long noteId);
 
