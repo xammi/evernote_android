@@ -163,6 +163,16 @@ public class EvernoteContentProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs)
     {
+        if (values.containsKey(Notes.NOTEBOOKS_GUID) && !values.containsKey(Notes.NOTEBOOKS_ID)) {
+            Long notebookId = getNotebookByGUID(values.getAsString(Notes.NOTEBOOKS_GUID));
+            values.put(Notes.NOTEBOOKS_ID, notebookId);
+        }
+
+        if (!values.containsKey(Notes.NOTEBOOKS_GUID) && values.containsKey(Notes.NOTEBOOKS_ID)) {
+            String notebookId = getNotebookGUIDbyID(values.getAsLong(Notes.NOTEBOOKS_ID));
+            values.put(Notes.NOTEBOOKS_GUID, notebookId);
+        }
+
         final SQLiteDatabase dbConnection = dbhelper.getWritableDatabase();
         int updated = dbConnection.update(getTableName(uri), values, selection, null);
         return updated;

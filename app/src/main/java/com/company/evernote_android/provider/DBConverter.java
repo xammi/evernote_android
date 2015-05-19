@@ -35,7 +35,7 @@ public class DBConverter {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Notes.TITLE, note.getTitle());
 
-        final Pattern pattern = Pattern.compile("<en-note>(.+?)</en-note>");
+        final Pattern pattern = Pattern.compile("<en-note>([\\s\\S]+?)</en-note>");
         final Matcher matcher = pattern.matcher(note.getContent());
         matcher.find();
 
