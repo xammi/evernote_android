@@ -63,6 +63,7 @@ public class NotebookProcessor {
 
                 if (statusCode == StatusCode.OK) {
                     ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
+                    contentValues.put(Notebooks.GUID, notebook.getGuid());
                     String WHERE_ID = Notebooks._ID + "=" + notebookId;
                     context.getContentResolver().update(Notebooks.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
