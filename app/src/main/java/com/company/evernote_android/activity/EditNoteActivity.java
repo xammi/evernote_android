@@ -127,10 +127,9 @@ public class EditNoteActivity extends NewNoteActivity {
             Toast.makeText(getApplicationContext(), R.string.error_updating_note, Toast.LENGTH_LONG).show();
         }
 
-        // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
         Note updatedNote = mService.getNote(noteId);
         if (updatedNote.getGuid() != null) {
-            updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote());
+            updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote(updatedNote));
         }
     }
 

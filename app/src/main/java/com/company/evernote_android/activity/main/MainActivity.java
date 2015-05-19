@@ -259,11 +259,12 @@ public class MainActivity extends ActionBarActivity {
 
                 long noteId = cursor.getLong(idIndex);
                 Note note = mService.getNote(noteId);
-                // TODO костыль из-за кривой базы, т.к. getNotebookGuid() возвращает обычный id, что печально
-                String notebookGuid = mService.getNotebook(Long.parseLong(note.getNotebookGuid())).getGuid();
+                String notebookGuid = note.getNotebookGuid();
+
                 ParcelableNote parcelableNote = new ParcelableNote(note);
                 parcelableNote.setNoteId(noteId);
                 parcelableNote.setNotebookGuid(notebookGuid);
+
                 evernoteServiceHelper.saveNote(parcelableNote);
             }
         }
