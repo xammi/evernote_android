@@ -75,7 +75,7 @@ public class NoteProcessor {
                 if (statusCode == StatusCode.OK) {
                     ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
                     contentValues.put(Notes.GUID, note.getGuid());
-                    String WHERE_ID = Notes._ID + "=" + noteId;
+                    String WHERE_ID = Notes._ID + "='" + noteId + "'";
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
                 processorCallback.send(statusCode, EvernoteService.TYPE_SAVE_NOTE);
@@ -92,7 +92,7 @@ public class NoteProcessor {
                 if (statusCode == StatusCode.OK) {
                     ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
                     contentValues.put(Notes.GUID, note.getGuid());
-                    String WHERE_ID = Notes.GUID + "=" + note.getGuid();
+                    String WHERE_ID = Notes.GUID + "='" + note.getGuid() + "'";
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
                 processorCallback.send(statusCode, EvernoteService.TYPE_UPDATE_NOTE);
@@ -109,7 +109,7 @@ public class NoteProcessor {
 
                 if (statusCode == StatusCode.OK) {
                     ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
-                    String WHERE_ID = Notes.GUID + "=" + guid;
+                    String WHERE_ID = Notes.GUID + "='" + guid + "'";
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
 
                 }
