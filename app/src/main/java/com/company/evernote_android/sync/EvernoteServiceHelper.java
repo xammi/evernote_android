@@ -134,8 +134,9 @@ public class EvernoteServiceHelper {
         }
 
         long requestId = generateRequestID();
-        pendingRequests.put(type_request, requestId);
-
+        if (type_request == EvernoteService.TYPE_GET_NOTES || type_request == EvernoteService.TYPE_GET_NOTEBOOKS) {
+            pendingRequests.put(type_request, requestId);
+        }
         Intent intent = createIntent(requestId);
         intent.putExtra(EvernoteService.ACTION_TYPE, type_request);
         return new Result(requestId, intent, false);

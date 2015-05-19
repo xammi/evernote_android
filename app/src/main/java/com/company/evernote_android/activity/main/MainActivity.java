@@ -48,9 +48,11 @@ import com.company.evernote_android.activity.main.fragments.NotesFragment;
 
 import com.company.evernote_android.sync.EvernoteServiceHelper;
 
+import com.company.evernote_android.utils.ParcelableNote;
 import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.InvalidAuthenticationException;
+import com.evernote.edam.type.Note;
 
 
 import android.database.SQLException;
@@ -233,6 +235,29 @@ public class MainActivity extends ActionBarActivity {
         else if (id == R.id.action_sync) {
             showSyncMessageFlag = true;
             syncNotebooksAndNotes();
+            Cursor cursor = mService.getUnsyncedNotebooks();
+            int nameIndex = cursor.getColumnIndexOrThrow(Notebooks.NAME);
+            int idIndex = cursor.getColumnIndexOrThrow(Notebooks._ID);
+            while (cursor.moveToNext()) {
+                String notebookTitle = cursor.getString(nameIndex);
+                long notebookId = cursor.getLong(idIndex);
+                evernoteServiceHelper.saveNotebook(notebookTitle, notebookId);
+            }
+
+            cursor = mService.getUnsyncedNotes();
+            idIndex = cursor.getColumnIndexOrThrow(Notes._ID);
+
+            while (cursor.moveToNext()) {
+
+                long noteId = cursor.getLong(idIndex);
+                Note note = mService.getNote(noteId);
+                // TODO костыль из-за кривой базы, т.к. getNotebookGuid() возвращает обычный id, что печально
+                String notebookGuid = mService.getNotebook(Long.parseLong(note.getNotebookGuid())).getGuid();
+                ParcelableNote parcelableNote = new ParcelableNote(note);
+                parcelableNote.setNoteId(noteId);
+                parcelableNote.setNotebookGuid(notebookGuid);
+                evernoteServiceHelper.saveNote(parcelableNote);
+            }
         }
 
         return super.onOptionsItemSelected(item);
