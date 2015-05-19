@@ -2,6 +2,7 @@ package com.company.evernote_android.sync.processor;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
@@ -15,12 +16,15 @@ import com.company.evernote_android.utils.StatusCode;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.Notebook;
 
+import android.database.SQLException;
 import java.util.List;
 
 /**
  * Created by Zalman on 17.05.2015.
  */
 public class NotebookProcessor {
+
+    private static final String LOGTAG = "NotebookProcessor";
 
     private ProcessorCallback processorCallback;
     private Context context;
@@ -47,7 +51,12 @@ public class NotebookProcessor {
                 if (statusCode == StatusCode.OK) {
                     for (Notebook notebook : notebooks) {
                         ContentValues contentValues = DBConverter.notebookToValues(notebook);
-                        context.getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
+                        try {
+                            context.getContentResolver().insert(Notebooks.CONTENT_URI, contentValues);
+                        }
+                        catch (SQLException e) {
+                            Log.e(LOGTAG, e.getMessage());
+                        }
                     }
                 }
                 processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTEBOOKS);

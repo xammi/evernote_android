@@ -57,7 +57,7 @@ public class SlideMenuAdapter extends BaseAdapter {
 
         iconView.setImageResource(item.icon);
         titleView.setText(item.title);
-        counterView.setText(item.getCounterValue());
+        counterView.setText("");
 
         if (EvernoteContract.Notebooks.CONTENT_TYPE.equals(item.type())) {
             convertView.setPadding(40, 0, 0, 0);

@@ -29,7 +29,7 @@ public class SaveNotebookRestMethod {
                 mEvernoteSession.getClientFactory().createNoteStoreClient().createNotebook(notebook, new OnClientCallback<Notebook>() {
                     @Override
                     public void onSuccess(Notebook data) {
-                        callback.sendNotebook(notebook, StatusCode.OK, notebookId);
+                        callback.sendNotebook(data, StatusCode.OK, notebookId);
                     }
 
                     @Override

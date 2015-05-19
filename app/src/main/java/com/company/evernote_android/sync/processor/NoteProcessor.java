@@ -2,6 +2,8 @@ package com.company.evernote_android.sync.processor;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.SQLException;
+import android.util.Log;
 
 import static com.company.evernote_android.provider.EvernoteContract.*;
 
@@ -25,6 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by Zalman on 12.04.2015.
  */
 public class NoteProcessor {
+    private static final String LOGTAG = "NoteProcessor";
 
     private ProcessorCallback processorCallback;
     private Context context;
@@ -58,7 +61,12 @@ public class NoteProcessor {
                 if (statusCode == StatusCode.OK) {
                     for (Note note : notes) {
                         ContentValues contentValues = DBConverter.noteToValues(note);
-                        context.getContentResolver().insert(Notes.CONTENT_URI, contentValues);
+                        try {
+                            context.getContentResolver().insert(Notes.CONTENT_URI, contentValues);
+                        }
+                        catch (SQLException e) {
+                            Log.e(LOGTAG, e.getMessage());
+                        }
                     }
                 }
                 processorCallback.send(statusCode, EvernoteService.TYPE_GET_NOTES);

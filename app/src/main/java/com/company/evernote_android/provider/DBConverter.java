@@ -18,9 +18,11 @@ public class DBConverter {
 
     public static ContentValues notebookToValues(Notebook notebook) {
         ContentValues contentValues = new ContentValues();
+        Long currentTime = new Date().getTime();
+
         contentValues.put(Notebooks.NAME, notebook.getName());
-        contentValues.put(Notebooks.CREATED, notebook.getServiceCreated());
-        contentValues.put(Notebooks.UPDATED, notebook.getServiceUpdated());
+        contentValues.put(Notebooks.CREATED, currentTime);
+        contentValues.put(Notebooks.UPDATED, currentTime);
 
         contentValues.put(Notebooks.GUID, notebook.getGuid());
 
