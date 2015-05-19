@@ -119,7 +119,7 @@ public class ReadNoteActivity extends ActionBarActivity {
             contentView.setText(mNote.getContent());
 
             TextView dateView = (TextView) findViewById(R.id.date);
-            dateView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(mNote.getUpdated())));
+            dateView.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date(mNote.getUpdated())));
 
             Notebook notebook = mService.getNotebook(mNote.getDeleted()); // feature
             TextView notebookView = (TextView) findViewById(R.id.notebook);
