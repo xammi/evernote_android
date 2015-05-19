@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -81,6 +82,7 @@ public class MainActivity extends ActionBarActivity {
     private BroadcastReceiver broadcastReceiver;
     private boolean showSyncMessageFlag = false;
 
+    ProgressDialog pd;
     ImageButton FAB;
 
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
@@ -131,6 +133,10 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
+
+        pd = new ProgressDialog(this);
+        pd.setTitle("");
+        pd.setMessage(getResources().getString(R.string.esdk__loading));
     }
 
     private void displayView(int position) {
@@ -233,6 +239,8 @@ public class MainActivity extends ActionBarActivity {
             createNotebook();
         }
         else if (id == R.id.action_sync) {
+            pd.show();
+
             showSyncMessageFlag = true;
             syncNotebooksAndNotes();
             Cursor cursor = mService.getUnsyncedNotebooks();
@@ -382,6 +390,7 @@ public class MainActivity extends ActionBarActivity {
                     showToast(resultCode, R.string.sync_notebooks_ok, R.string.sync_notebooks_error);
                 }
                 else if (showSyncMessageFlag && resultRequestId == notesRequestId) {
+                    pd.dismiss();
                     displayView(0);
                     showToast(resultCode, R.string.sync_notes_ok, R.string.sync_notes_error);
                 }
