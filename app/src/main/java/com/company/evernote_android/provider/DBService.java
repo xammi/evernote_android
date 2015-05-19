@@ -134,6 +134,8 @@ public class DBService extends Service implements ClientAPI {
             note.setContent(cursor.getString(cursor.getColumnIndexOrThrow(Notes.CONTENT)));
             note.setCreated(cursor.getLong(cursor.getColumnIndexOrThrow(Notes.CREATED)));
             note.setUpdated(cursor.getLong(cursor.getColumnIndexOrThrow(Notes.UPDATED)));
+
+            note.setGuid(cursor.getString(cursor.getColumnIndexOrThrow(Notes.GUID)));
             note.setNotebookGuid(cursor.getString(cursor.getColumnIndexOrThrow(Notes.NOTEBOOKS_GUID)));
             note.setDeleted(cursor.getLong(cursor.getColumnIndexOrThrow(Notes.NOTEBOOKS_ID))); // feature
             cursor.close();

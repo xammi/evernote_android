@@ -42,7 +42,7 @@ public class DBConverter {
         contentValues.put(Notes.UPDATED, note.getUpdated());
 
         contentValues.put(Notes.NOTEBOOKS_GUID, note.getNotebookGuid());
-        contentValues.put(Notebooks.GUID, note.getGuid());
+        contentValues.put(Notes.GUID, note.getGuid());
 
         if (note.getDeleted() == 0) {
             contentValues.put(Notes.STATE_DELETED, StateDeleted.FALSE.ordinal());

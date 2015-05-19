@@ -34,7 +34,7 @@ public class SaveNoteRestMethod {
                     }
                 });
             } catch (TTransportException exception) {
-                Log.e(LOGTAG, "saveNote exception:", exception);
+                Log.e(LOGTAG, "saveNotsendNote(null, StatusCode.ERROR, noteId);e exception:", exception);
             }
         }
     }

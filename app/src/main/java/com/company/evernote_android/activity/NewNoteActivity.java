@@ -121,7 +121,7 @@ public class NewNoteActivity extends ActionBarActivity {
         note.setTitle(title);
 
         //TODO: line breaks need to be converted to render in ENML
-        String noteContent = EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX;
+        String noteContent = content;
         note.setContent(noteContent);
 
         try {

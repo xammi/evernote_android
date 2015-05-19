@@ -74,6 +74,7 @@ public class NoteProcessor {
 
                 if (statusCode == StatusCode.OK) {
                     ContentValues contentValues = DBConverter.prepareNewUpdate(StateSyncRequired.SYNCED);
+                    contentValues.put(Notes.GUID, note.getGuid());
                     String WHERE_ID = Notes._ID + "=" + noteId;
                     context.getContentResolver().update(Notes.CONTENT_URI, contentValues, WHERE_ID, null);
                 }
