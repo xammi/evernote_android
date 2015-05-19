@@ -145,7 +145,7 @@ public class ReadNoteActivity extends ActionBarActivity {
         }
         // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
         String guid = mService.getNote(noteId).getGuid();
-        if (guid == null) {
+        if (guid != null) {
             deleteNoteRequestId = evernoteServiceHelper.deleteNote(guid);
         }
     }
