@@ -3,6 +3,7 @@ package com.company.evernote_android.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.evernote.client.android.EvernoteUtil;
 import com.evernote.edam.type.Note;
 
 /**
@@ -80,7 +81,7 @@ public class ParcelableNote implements Parcelable {
     public Note toNote() {
         Note note = new Note();
         note.setTitle(title);
-        note.setContent(content);
+        note.setContent(EvernoteUtil.NOTE_PREFIX + content + EvernoteUtil.NOTE_SUFFIX);
         note.setGuid(guid);
         note.setNotebookGuid(notebookGuid);
         note.setCreated(created);
