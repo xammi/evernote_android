@@ -98,17 +98,17 @@ public class EvernoteContentProvider extends ContentProvider {
         }
     }
 
-    private Long getNotebookByID(String ID) {
-        String WHERE_ID = Notebooks._ID + "='" + ID + "'";
-        Cursor cursor = query(Notebooks.CONTENT_URI, new String[]{Notebooks._ID}, WHERE_ID, null, null);
+    private String getNotebookGUIDbyID(long ID) {
+        String WHERE_ID = Notebooks._ID + "=" + ID;
+        Cursor cursor = query(Notebooks.CONTENT_URI, new String[]{Notebooks.GUID}, WHERE_ID, null, null);
         if (cursor == null || cursor.getCount() == 0) {
             return null;
         }
         else {
             cursor.moveToNext();
-            long id = cursor.getLong(cursor.getColumnIndexOrThrow(Notebooks._ID));
+            String guid = cursor.getString(cursor.getColumnIndexOrThrow(Notebooks.GUID));
             cursor.close();
-            return id;
+            return guid;
         }
     }
 
@@ -130,7 +130,7 @@ public class EvernoteContentProvider extends ContentProvider {
         }
 
         if (!values.containsKey(Notes.NOTEBOOKS_GUID) && values.containsKey(Notes.NOTEBOOKS_ID)) {
-            Long notebookId = getNotebookByID(values.getAsString(Notes.NOTEBOOKS_ID));
+            String notebookId = getNotebookGUIDbyID(values.getAsLong(Notes.NOTEBOOKS_ID));
             values.put(Notes.NOTEBOOKS_GUID, notebookId);
         }
 

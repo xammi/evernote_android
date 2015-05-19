@@ -30,6 +30,8 @@
     <string name="new_note_content_hint">Начните печатать текст</string>
     <string name="create_notebook">Создайте простой блокнот</string>
 
+    <string name="success_dleting_note">Заметка удалена</string>
+
     <string name="evernote">Evernote МГТУ</string>
     <string name="sync">Синхронизация</string>
     <string name="sync_settings_summary">Sync</string>

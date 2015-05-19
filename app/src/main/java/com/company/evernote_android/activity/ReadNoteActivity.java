@@ -12,6 +12,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -138,15 +139,16 @@ public class ReadNoteActivity extends ActionBarActivity {
 
     private void deleteNote() {
         if (mService.deleteNote(noteId)) {
+            String guid = mService.getNote(noteId).getGuid();
+            if (guid != null) {
+                deleteNoteRequestId = evernoteServiceHelper.deleteNote(guid);
+            }
+            Log.d(LOGTAG, "Note was deleted");
+            Toast.makeText(ReadNoteActivity.this, R.string.success_dleting_note, Toast.LENGTH_SHORT).show();
             finish();
         }
         else {
             Toast.makeText(ReadNoteActivity.this, R.string.error_deleting_note, Toast.LENGTH_SHORT).show();
-        }
-        // TODO getNote(noteId) возвращает note с guid = null из-за этого синронизироваться не будет
-        String guid = mService.getNote(noteId).getGuid();
-        if (guid != null) {
-            deleteNoteRequestId = evernoteServiceHelper.deleteNote(guid);
         }
     }
 

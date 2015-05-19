@@ -134,6 +134,8 @@ public class NewNoteActivity extends ActionBarActivity {
             String notebookGuid = mService.getNotebook(mSelectedNotebook).getGuid();
             ParcelableNote parcelableNote = new ParcelableNote(title.trim(), noteContent, notebookGuid, created, noteId);
             saveNoteRequestId = evernoteServiceHelper.saveNote(parcelableNote);
+
+            finish();
         }
         catch (SQLException e) {
             Log.d(LOGTAG, e.getMessage());

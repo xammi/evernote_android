@@ -119,17 +119,17 @@ public class EditNoteActivity extends NewNoteActivity {
         boolean result = mService.updateNote(noteId, title.trim(), content, mSelectedNotebook);
 
         if (result) {
+            Note updatedNote = mService.getNote(noteId);
+            if (updatedNote.getGuid() != null) {
+                updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote(updatedNote));
+            }
             Log.d(LOGTAG, "Note was updated");
             Toast.makeText(getApplicationContext(), R.string.note_updated, Toast.LENGTH_LONG).show();
+            finish();
         }
         else {
             Log.d(LOGTAG, "Error saving updated");
             Toast.makeText(getApplicationContext(), R.string.error_updating_note, Toast.LENGTH_LONG).show();
-        }
-
-        Note updatedNote = mService.getNote(noteId);
-        if (updatedNote.getGuid() != null) {
-            updateNoteRequestId = evernoteServiceHelper.updateNote(new ParcelableNote(updatedNote));
         }
     }
 
